@@ -40,6 +40,8 @@ def home_view(request):
         home_sections = get_section_infos('foyerduporteau')
         all_events = get_next_thrid_event_in_section(home_sections['index'])
     except IndexError:
+	home_sections = None
+	all_events = None
         section = None
     return render_to_response("fdp_app/home_view.html", { 
         'home_sections' : home_sections,
@@ -188,7 +190,7 @@ def login_view(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             if user.is_active:
-                login(request, user)    
+                login(request, user)
                 try:
                     home_sections = get_section_infos('foyerduporteau')
                     all_events = get_next_thrid_event_in_section(home_sections['index'])

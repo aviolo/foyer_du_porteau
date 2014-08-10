@@ -12,6 +12,7 @@ handler500 = curry(server_error, template_name='fdp_app.500.html')
 
 urlpatterns = patterns('',
     url(r'^medias/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT, 'show_indexes': settings.DEBUG}, name='medias'),
+    url(r'^statics/(?P<path>.*)$', serve, {'document_root': settings.STATIC_URL, 'show_indexes': settings.DEBUG}, name='statics'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include('fdp_app.urls')),
     # Examples:
