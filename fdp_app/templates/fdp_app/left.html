@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<div class="left">
+    <div class="block">
+        <div class="title">Sections</div>
+        <ul id="section-list">
+	          {% for section in all_sections %}
+                {% if section.types == 0 and section.name != 'Foyer du Porteau' %}
+	                <li>
+			            <div class="view">
+                            <a href="{% url 'fdp_app-section_view' section.url %}">{{ section.name }}</a>
+			            </div>
+	                </li>
+                {% endif %}
+	          {% endfor %}
+		</ul>
+    </div>
+
+    <div class="block">
+        <img src="http://www.old.foyerduporteau.net/2012/animations/images/fermopanier.gif" style="width:100%;">
+        <div class="margin" style="margin: 8px;">Tous les vendredis matin livraison de paniers de légumes
+        <a href="http://www.fermopanier.com">fermopanier.com</a></div>
+    </div>
+    <div class="block">
+        <div class="title">Prochaines Fêtes</div>
+        <ul id="section-list">
+            {% for event in next_events %}
+                <li>
+                <a href="{% url 'fdp_app-event_view' event.section.url event.id %}">{{ event.name }}</a>
+                </li>
+            {% endfor %}
+		</ul>
+        <!--<div id="calendar">
+        </div>-->
+    
+    </div>
+</div>

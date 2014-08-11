@@ -1,0 +1,57 @@
+<style type="text/css">
+/* Div sommaire */
+.outil_titre
+{
+  font-size: 14px;
+  font-weight: 900;
+  text-align: left;
+}
+/* Lien Sommaire */
+.lien_titre {
+  font-weight: 900;
+  text-decoration: none;
+}
+/* Div des infos */
+.outil {
+    margin: 0 0 15px;
+    overflow: auto;
+    padding: 10px 5%;
+}
+/* Titre de chaque pavé evenements */
+.histtitre {
+    font-weight: bold;
+    padding-top: 5px;
+}
+/* Texte de chaque pavé evenements */
+.histtexte {
+    padding-left: 5px;
+    padding-right: 5px;
+    text-indent: 0;
+}
+
+.histlien {
+    font-family: Arial;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: left;
+    text-decoration: none;
+}
+</style>
+
+<script type="text/javascript">
+// Mettre à zéro ce qui ne doit pas être affiché
+var evenement= 1;
+var naissance= 0;
+var deces= 0;
+var saint= 1;
+
+// NE RIEN MODIFIER CI-DESSOUS !
+var now= new Date();
+var mois = (now.getMonth() + 1).toString();
+var jour = now.getDate().toString();
+
+if (mois.length == 1) { mois = '0'+ mois.toString(); }
+if (jour.length == 1) { jour = '0'+ jour.toString(); }
+var maDate = mois.toString() + jour.toString();
+document.write("<scr"+"ipt src='http://www.herodote.net/_webService/ws_ephemeride.php?jour="+maDate+"&utf8&type_appel="+evenement.toString()+naissance.toString()+deces.toString()+saint.toString()+"'></scr"+"ipt>");
+</script>

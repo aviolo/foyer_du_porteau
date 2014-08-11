@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <link rel="stylesheet" href="{% url 'medias' 'statics/stylesheets/header.css' %}" />
+        <link rel="stylesheet" href="{% url 'medias'  'statics/stylesheets/style.css' %}" />
+        <link rel="stylesheet" href="{% url 'medias'  'statics/stylesheets/font.css' %}" />
+        <link rel="stylesheet" href="{% url 'medias'  'statics/stylesheets/blocks.css' %}" />
+        <link rel="stylesheet" href="{% url 'medias' 'statics/stylesheets/footer.css' %}" />
+        <title>Foyer du Porteau</title>
+    </head>
+    <body>
+		{% include "fdp_app/header.html" %}
+        <div id="bloc_page">                       
+            <div id="inline">
+                {% include "fdp_app/left.html" %}
+            </div>
+            <div id="inline">
+                <div class="center">
+				    <div id="content">
+                        <div class="block">
+                            <div class="title_fixe">Connection au site</div>
+                            <form action="/login/" method="post">
+                                {% csrf_token %}
+        		                    utilisateur : <input type="text" name="username" value="" /><br />
+        		                    mot de passe : <input type="password" name="password" value="" /><br />
+        		                    <input type="submit" value="Log In" />
+	                        </form>
+                            {% if username %}
+                              {{ username }}<br />
+                            {% endif %}
+                            {{ state }}<br />
+                            </div> 
+                    </div>
+                </div>
+            </div>
+            
+            <div id="inline">
+                {% include "fdp_app/right.html" %}
+            </div>           
+        </div>
+        {% include "fdp_app/footer.html" %}
+    </body>
+</html>

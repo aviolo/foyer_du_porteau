@@ -1,0 +1,26 @@
+h1, h2, h3, h4 { margin: 0; padding: 0; }
+
+.highlight_font
+{
+	color: #00346f;
+	font-weight:bold;
+}
+
+li
+{
+	margin: 8px;
+    margin-left: 22px;
+	cursor: pointer;
+}
+
+a{
+    color: #707070;
+	margin: 0px;
+    text-decoration: none;
+}
+
+a:hover
+{
+    color: #000000;
+}
+

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <link rel="stylesheet" href="{% url 'medias' 'statics/stylesheets/header.css' %}" />
+        <link rel="stylesheet" href="{% url 'medias'  'statics/stylesheets/style.css' %}" />
+        <link rel="stylesheet" href="{% url 'medias'  'statics/stylesheets/font.css' %}" />
+        <link rel="stylesheet" href="{% url 'medias'  'statics/stylesheets/blocks.css' %}" />
+        <link rel="stylesheet" href="{% url 'medias' 'statics/stylesheets/footer.css' %}" />
+        <title>Foyer du Porteau</title>
+        <script type="text/javascript" src="http://slideshow.triptracker.net/slide.js"></script>
+    </head>
+
+    <body>
+		{% include "fdp_app/header.html" %}
+        <div id="bloc_page">                       
+            <div id="inline">
+                {% include "fdp_app/left.html" %}
+            </div>
+            <div id="inline">
+                <div class="center">
+				    <div id="content">
+                        <div class="block">
+                            <div class="title_fixe">{{ home_sections.name }}</div>
+							<div class="left">
+			                    {% if home_sections.picture %}
+			                        <img src="{% url 'medias' home_sections.picture %}" >
+			                    {% endif %}
+							</div>
+	                        <div class="paragraphe">
+                            {% include "fdp_app/ephemeride.html" %}
+                            {{ home_sections.content|safe|urlize|linebreaks|truncatewords:150 }}
+                            </div>
+                        </div>
+                        {% for event in all_events %}
+						<div class="block">
+                            <div class="title">
+                                <a href="{% url 'fdp_app-event_view' home_sections.url event.id %}">{{ event.name }}</a>
+							</div>
+                            <div class="subtitle"> Date : {{ event.date }}</div>
+							<div class="left">
+                                {% for image in event.pictures %}
+                                    {% if forloop.first %}
+                                        <script type="text/javascript">
+                                        var viewer_{{event.id}} = new PhotoViewer();
+                                        {% for image in event.pictures %}
+                                        viewer_{{event.id}}.add("{% url 'medias' image.filename %}");
+                                        {% endfor %}
+                                        </script>
+                                        <a href="javascript:void(viewer_{{event.id}}.show(0))">
+                                            <img src="{% url 'medias' image.miniature %}" >
+                                        </a>                           
+                                    {% endif %}  
+                                {% endfor %}
+							</div>
+                    		<div class="paragraphe">{{ event.content|safe|urlize|linebreaks|truncatewords:100 }}</div>
+                            <a href="javascript:void(viewer_{{event.id}}.show(0))">
+                                <div class="bottom">
+                                    {% for image in event.pictures|slice:"1:6" %}
+                                        <img class="images" src="{% url 'medias' image.miniature %}">                           
+                                    {% endfor %}
+                                </div>
+                            </a>
+					    </div>
+                      	{% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div id="inline">
+                {% include "fdp_app/right.html" %}
+            </div>           
+        </div>
+        {% include "fdp_app/footer.html" %}
+    </body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <link rel="stylesheet" href="{% url 'medias' 'statics/stylesheets/header.css' %}" />
+        <link rel="stylesheet" href="{% url 'medias'  'statics/stylesheets/style.css' %}" />
+        <link rel="stylesheet" href="{% url 'medias'  'statics/stylesheets/font.css' %}" />
+        <link rel="stylesheet" href="{% url 'medias'  'statics/stylesheets/blocks.css' %}" />
+        <link rel="stylesheet" href="{% url 'medias' 'statics/stylesheets/footer.css' %}" />
+        <title>Foyer du Porteau</title>
+    </head>
+
+    <body>
+		{% include "fdp_app/header.html" %}
+        <div id="bloc_page">                       
+            <div id="inline">
+                {% include "fdp_app/left.html" %}
+            </div>
+            <div id="inline">
+                <div class="center">
+				    <div id="content">
+						<div class="block">
+							<div class="title">{{ event.name }}</div>
+							<div class="left">
+                                {% for image in event.pictures %}
+                                    {% if forloop.first %}
+                                        <img src="{% url 'medias' image.filename %}" >                           
+                                    {% endif %}  
+                                {% endfor %}
+								Date : <div class="schedule">{{ event.date }}</div>
+							</div>
+                    		<div class="paragraphe">{{ event.content|linebreaks }}</div>
+                            <script type="text/javascript"
+	                            src="http://slideshow.triptracker.net/slide.js"></script>
+                            <script type="text/javascript">
+                                var viewer = new PhotoViewer();
+                                {% for image in event.pictures %}
+                                viewer.add("{% url 'medias' image.filename %}");
+                                {% endfor %}
+                            </script>
+                            <a href="javascript:void(viewer.show(0))">
+                                <div class="bottom">
+                                    {% for image in event.pictures %}
+                                        <img class="images" src="{% url 'medias' image.filename %}">                           
+                                    {% endfor %}</div>
+						        </div>
+                            </a>
+
+                    </div>
+                </div>
+            </div>
+            
+            <div id="inline">
+                {% include "fdp_app/right.html" %}
+            </div>           
+        </div>
+        {% include "fdp_app/footer.html" %}
+    </body>
+</html>
