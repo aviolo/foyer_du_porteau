@@ -16,9 +16,11 @@
     </div>
 	<div id="menu">
         {% for section in all_sections %}
-            {% if section.types == 1 and section.hyde != 1 %}
+            {% if section.types == 1 and section.hide != 1 %}
                 {% if section.name == 'Accueil' %}
                     <li><a href="{% url 'fdp_app-home_view' %}">{{ section.name }}</a></li>
+                {% elif section.name == 'Activités' %}
+                    <li><a href="{% url 'fdp_app-activites_view' %}">{{ section.name }}</a></li>
                 {% elif section.name == 'Précédent site' %}
                     <li><a href="http://www.old.foyerduporteau.net/">{{ section.name }}</a></li>
                 {% elif section.name == 'Photos' %}

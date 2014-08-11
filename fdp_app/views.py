@@ -236,6 +236,9 @@ def infos_view(request, section_slug):
     content = { 'contents_sections' : contents_sections,'all_events' : all_events, }
     return render_to_response("fdp_app/infos_view.html", content, context_instance=RequestContext(request))
 
+def activites_view(request, section_slug):
+    return render_to_response("fdp_app/activites_view.html", {}, context_instance=RequestContext(request))
+
 def pictures_view(request):
     all_events = list()
     for event in models.Event.objects.filter(date__lte=datetime.now()).order_by('date').reverse():
