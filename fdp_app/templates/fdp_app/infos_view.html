@@ -13,55 +13,49 @@
     <body>
 		{% include "fdp_app/header.html" %}
         <div id="bloc_page">                       
-            <div id="inline">
-                {% include "fdp_app/left.html" %}
-            </div>
-            <div id="inline">
-                <div class="center">
-				    <div id="content">
-                        <div class="block">
-                            <div class="title_fixe">{{ contents_sections.name }}</div>
-							<div class="left">
-			                    {% if contents_sections.picture %}
-			                        <img src="{% url 'medias' contents_sections.picture %}" >
-			                    {% endif %}
-							</div>
-	                        <div class="paragraphe">{{ contents_sections.content|safe|urlize|linebreaks }}</div>
-                        </div>
-                        <script type="text/javascript" src="http://slideshow.triptracker.net/slide.js"></script>
-                        {% for event in all_events %}
-                        <div class="block">
-							<div class="left">
-                                <script type="text/javascript">
-                                var viewer_{{event.id}} = new PhotoViewer();
-                                </script>
-                                {% for image in event.pictures %}
-                                    {% if forloop.first %}
-                                        <a href="javascript:void(viewer_{{event.id}}.show(0))">
-                                            <img src="{% url 'medias' image.miniature %}" >
-                                        </a>                              
-                                    {% endif %}
-                                    <script type="text/javascript">
-                                        viewer_{{event.id}}.add("{% url 'medias' image.filename %}");
-                                    </script>
-                                {% endfor %}
-							</div>
-                    		<div class="paragraphe">{{ event.content|urlize|linebreaks }}</div>
-                            <div class="bottom">
-                                {% for image in event.pictures|slice:"1:6" %}
-                                    <a href="javascript:void(viewer_{{event.id}}.show(0))">
-                                        <img class="images" src="{% url 'medias' image.miniature %}"> 
-                                    </a>                          
-                                {% endfor %}
-                            </div>
-                        </div>
-                      	{% endfor %}
+            {% include "fdp_app/left.html" %}
+            {% include "fdp_app/right.html" %}
+            <div class="center">
+			    <div id="content">
+                    <div class="block">
+                        <div class="title">{{ contents_sections.name }}</div>
+						<div class="left">
+		                    {% if contents_sections.picture %}
+		                        <img src="{% url 'medias' contents_sections.picture %}" >
+		                    {% endif %}
+						</div>
+                        <div class="paragraphe">{{ contents_sections.content|safe|urlize|linebreaks }}</div>
                     </div>
+                    <script type="text/javascript" src="http://slideshow.triptracker.net/slide.js"></script>
+                    {% for event in all_events %}
+                    <div class="block">
+						<div class="left">
+                            <script type="text/javascript">
+                            var viewer_{{event.id}} = new PhotoViewer();
+                            </script>
+                            {% for image in event.pictures %}
+                                {% if forloop.first %}
+                                    <a href="javascript:void(viewer_{{event.id}}.show(0))">
+                                        <img src="{% url 'medias' image.miniature %}" >
+                                    </a>                              
+                                {% endif %}
+                                <script type="text/javascript">
+                                    viewer_{{event.id}}.add("{% url 'medias' image.filename %}");
+                                </script>
+                            {% endfor %}
+						</div>
+                		<div class="paragraphe">{{ event.content|urlize|linebreaks }}</div>
+                        <div class="bottom">
+                            {% for image in event.pictures|slice:"1:6" %}
+                                <a href="javascript:void(viewer_{{event.id}}.show(0))">
+                                    <img class="images" src="{% url 'medias' image.miniature %}"> 
+                                </a>                          
+                            {% endfor %}
+                        </div>
+                    </div>
+                  	{% endfor %}
                 </div>
             </div>
-            <div id="inline">
-                {% include "fdp_app/right.html" %}
-            </div>           
         </div>
         {% include "fdp_app/footer.html" %}
     </body>
