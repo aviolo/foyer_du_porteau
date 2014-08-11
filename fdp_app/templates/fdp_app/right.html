@@ -3,6 +3,8 @@
     <div class="transparent_block">
         <div class="title">Changements récents</div>
         {% for entry in recent_change %}
+
+            <a href="{% url 'fdp_app-event_view' entry.section_slug entry.id %}">
             <div id="light_block">
             <!--<div class="subtitle">{{ entry.title }}</div>-->
             {% if entry.pictures %}
@@ -19,7 +21,9 @@
 		        </div>
             {% endif %} 
         	<div class="paragraphe">{{ entry.name }}</div>
-	    </div>
+	        </div>
+            </a>
+
         {% endfor %}
     </div>
 
