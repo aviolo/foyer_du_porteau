@@ -29,14 +29,16 @@
                                 Horaires : {{ contents_sections.schedule }}
                                 {{ contents_sections.id }}
                             </div>
-                            <a href="{% url 'fdp_app-modify_section_view' contents_sections.url %}">
-                                <div class="light_block" style="width:20%; float:right; border: 2px dashed #f67521;">
-                                    <div class="left">
+                            <div class="transparent_block" style="width:20%; float:right; border: 2px dashed #f67521;">
+                                <div class="light_block">
+                                    <div class="left" style="width:10%;">
                                         <img src="{% url 'statics' 'images/change.png' %}">
                                     </div>
-                                    <div class="paragraphe"><div class="title">Modifier un évènement</div></div>
+                                    <div class="paragraphe">
+                                        <a href="{% url 'fdp_app-modify_section_view' contents_sections.url %}">Modifier la section</a>
+                                    </div>
                                 </div>
-                            </a>
+                            </div>
 						<div class="left">
 		                    {% if contents_sections.picture %}
 		                        <img src="{% url 'medias' contents_sections.picture %}" >
