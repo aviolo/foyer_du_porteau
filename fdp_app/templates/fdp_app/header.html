@@ -4,10 +4,8 @@
         {% if username %}
             <div class="username">
                 Bonjour {{ username }}<br />
-                <a href="{% url 'fdp_app-logout_view' %}">se déconnecter<br /></a>
-            </div>
-            <div class='menu'>
                 <a href="{% url 'fdp_app-menu_view' %}">menu<br /></a>
+                <a href="{% url 'fdp_app-logout_view' %}">se déconnecter<br /></a>
             </div>
         {% else %}
             <div class="username">
@@ -18,7 +16,7 @@
     </div>
 	<div id="menu">
         {% for section in all_sections %}
-            {% if section.types == 1 %}
+            {% if section.types == 1 and section.hyde != 1 %}
                 {% if section.name == 'Accueil' %}
                     <li><a href="{% url 'fdp_app-home_view' %}">{{ section.name }}</a></li>
                 {% elif section.name == 'Précédent site' %}

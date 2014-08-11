@@ -1,6 +1,6 @@
 .block
 {
-	background-color: #ffffff;
+	background-color: #fefbe0;
     border: 1px solid #f67521;
     -moz-border-radius: 5px;
     border-radius: 5px;
@@ -98,6 +98,16 @@
 {
 	width: 100%;
     border-radius: 10px;
+}
+
+.transparent_block a
+{
+    color: #000000;
+}
+
+.transparent_block a:hover
+{
+    color: #8c8c8c;
 }
 
 #light_block

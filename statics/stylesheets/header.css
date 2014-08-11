@@ -28,7 +28,11 @@
 }
 
 #header .menu {
-    float:center;
+    border: 1px dashed #ffffff;
+    color: #ffffff;
+	padding: 3px;
+    border-radius: 5px;
+    float:right;
 }
 
 #header .username {
