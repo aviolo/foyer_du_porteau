@@ -29,12 +29,6 @@
                                 {% endfor %}
                                 Horaires : {{ contents_sections.schedule }}
                                 {{ contents_sections.id }}
-                                <a href="{% url 'fdp_app-add_event_view' contents_sections.url %}">
-                                    <div class="block" style="width:15%;">
-                                        <div class="title">Ajouter un évènement</div>
-                                        <img src="{% url 'statics'  'images/add.png' %}" style="width:40%; margin:auto; padding:10px;">
-                                    </div>
-                                </a>
                             </div>
 						<div class="left">
 		                    {% if contents_sections.picture %}
@@ -44,6 +38,16 @@
                         <div class="paragraphe">{{ contents_sections.content|safe|urlize|linebreaks }}</div>
                     </div>
                     <script type="text/javascript" src="http://slideshow.triptracker.net/slide.js"></script>
+
+                    <a href="{% url 'fdp_app-add_event_view' contents_sections.url %}">
+                        <div class="transparent_block" style="width:30%; margin:auto;">
+                            <div class="left">
+                                <img src="{% url 'statics'  'images/add.png' %}">
+                            </div>
+                            <div class="paragraphe">Ajouter un évènement à la section {{ contents_sections.name }} </div>
+                        </div>
+                    </a>
+
                     {% for event in all_events %}
 					<div class="block">
                         <div class="title">
