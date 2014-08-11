@@ -67,7 +67,7 @@ def modify_profile_view(request):
     try:
         home_sections = get_section_infos('foyerduporteau')
         all_events = get_next_thrid_event_in_section(home_sections['index'])
-    except IndexError:
+    except IndexError,e:
         on_error('Error in modify profile view : %s' %e)
     content = { 'home_sections' : home_sections, 'all_events' : all_events,}
     return render_to_response("fdp_app/modify_profile_view.html", content, context_instance=RequestContext(request))
@@ -79,7 +79,7 @@ def modify_event_view(request):
     try:
         home_sections = get_section_infos('foyerduporteau')
         all_events = get_next_thrid_event_in_section(home_sections['index'])
-    except IndexError:
+    except IndexError,e:
         on_error('Error in modify event view : %s' %e)
     content = { 'home_sections' : home_sections, 'all_events' : all_events,}#'event_form' : event_form,
     return render_to_response("fdp_app/modify_event_view.html", content, context_instance=RequestContext(request))
@@ -90,7 +90,7 @@ def add_event_view(request):
     try:
         home_sections = get_section_infos('foyerduporteau')
         all_events = get_next_thrid_event_in_section(home_sections['index'])
-    except IndexError:
+    except IndexError,e:
         on_error('Error in add event view 1 : %s' %e)
     user = request.user
     the_user = models.User.objects.filter(username=user)[0]
@@ -109,7 +109,7 @@ def add_event_view(request):
                     section_name = defaultfilters.slugify(section_name)
                     event_name = defaultfilters.slugify(event.name)
                     save_files(request.FILES['file'], year, section_name, event_name, new_event.pk, the_user.id)
-            except IndexError:
+            except IndexError,e:
                 on_error('Error in add event view 2 : %s' %e)
             content = { 'home_sections' : home_sections,'all_events' : all_events, }
             return render_to_response("fdp_app/menu_view.html", content, context_instance=RequestContext(request))
@@ -128,7 +128,7 @@ def add_picture_view(request):
     try:
         home_sections = get_section_infos('foyerduporteau')
         all_events = get_next_thrid_event_in_section(home_sections['index'])
-    except IndexError:
+    except IndexError,e:
         on_error('Error in add picture view 1 : %s' %e)
     user = request.user
     the_user = models.User.objects.filter(username=user)[0]
@@ -152,7 +152,7 @@ def add_picture_view(request):
                     section_name = defaultfilters.slugify(section_name)
                     event_name = defaultfilters.slugify(event.name)
                     save_files(request.FILES['file'], year, section_name, event_name, event_id, the_user.id)
-            except IndexError:
+            except IndexError,e:
                 on_error('Error in add picture view 2 : %s' %e)
         content = {'home_sections' : home_sections, 'all_events' : all_events,}
         return render_to_response("fdp_app/menu_view.html", content , context_instance=RequestContext(request))
@@ -169,7 +169,7 @@ def menu_view(request):
     try:
         home_sections = get_section_infos('foyerduporteau')
         all_events = get_next_thrid_event_in_section(home_sections['index'])
-    except IndexError:
+    except IndexError,e:
         on_error('Error in menu view : %s' %e)
     content = {'home_sections' : home_sections, 'all_events' : all_events,}
     return render_to_response("fdp_app/menu_view.html", content, context_instance=RequestContext(request))    
@@ -181,7 +181,7 @@ def logout_view(request):
     try:
         home_sections = get_section_infos('foyerduporteau')
         all_events = get_next_thrid_event_in_section(home_sections['index'])
-    except IndexError:
+    except IndexError,e:
         on_error('Error in logout view : %s' %e)
     content = {'home_sections' : home_sections, 'all_events' : all_events, 'username' : None, }
     return render_to_response("fdp_app/home_view.html", content, context_instance=RequestContext(request))
@@ -201,7 +201,7 @@ def login_view(request):
                 try:
                     home_sections = get_section_infos('foyerduporteau')
                     all_events = get_next_thrid_event_in_section(home_sections['index'])
-                except IndexError:
+                except IndexError,e :
                     on_error('Error in login view : %s' %e)
                 content = {'home_sections' : home_sections, 'all_events' : all_events, 'username' : user,}
                 return render_to_response("fdp_app/home_view.html", content, context_instance=RequestContext(request))
@@ -220,7 +220,7 @@ def section_view(request, section_slug):
         contents_sections = get_section_infos(section_slug)
         section_contact = get_section_contact(contents_sections['index'])
         all_events = get_all_event_in_section(contents_sections['index'])
-    except IndexError:
+    except IndexError, e:
         on_error('Error in section %s view : %s' %(section_slug,e))
     content = { 'contents_sections' : contents_sections, 'section_contact' : section_contact, 'all_events' : all_events,}
     return render_to_response("fdp_app/section_view.html", content, context_instance=RequestContext(request))
@@ -231,7 +231,7 @@ def infos_view(request, section_slug):
     try:
         contents_sections = get_section_infos(section_slug)
         all_events = get_all_event_in_section(contents_sections['index'])
-    except IndexError:
+    except IndexError,e:
         on_error('Error in infos %s view : %s' %(section_slug,e))
     content = { 'contents_sections' : contents_sections,'all_events' : all_events, }
     return render_to_response("fdp_app/infos_view.html", content, context_instance=RequestContext(request))
