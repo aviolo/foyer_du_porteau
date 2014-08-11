@@ -15,31 +15,30 @@
     <body>
 		{% include "fdp_app/header.html" %}
         <div id="bloc_page">                       
-            <div id="inline">
-                {% include "fdp_app/left.html" %}
-            </div>
-            <div id="inline">
-                <div class="center">
-				    <div id="content">
-                        <div class="block">
-                            <div class="title_fixe">{{ home_sections.name }}</div>
-							<div class="left">
-			                    {% if home_sections.picture %}
-			                        <img src="{% url 'medias' home_sections.picture %}" >
-			                    {% endif %}
-							</div>
-	                        <div class="paragraphe">
-                            {% include "fdp_app/ephemeride.html" %}
-                            {{ home_sections.content|safe|urlize|linebreaks|truncatewords:150 }}
-                            </div>
+            {% include "fdp_app/left.html" %}
+            {% include "fdp_app/right.html" %}
+            <div class="center">
+			    <div id="content">
+
+                    <div class="block">
+                        <div class="title">{{ home_sections.name }}</div>
+						<div class="left">
+		                    {% if home_sections.picture %}
+		                        <img src="{% url 'medias' home_sections.picture %}" >
+		                    {% endif %}
+						</div>
+                        <div class="paragraphe">
+                        {% include "fdp_app/ephemeride.html" %}
+                        {{ home_sections.content|safe|urlize|linebreaks|truncatewords:150 }}
                         </div>
-                        {% for event in all_events %}
-						<div class="block">
-                            <div class="title">
-                                <a href="{% url 'fdp_app-event_view' home_sections.url event.id %}">{{ event.name }}</a>
-							</div>
-                            <div class="subtitle"> Date : {{ event.date }}</div>
-							<div class="left">
+                    </div>
+
+                    {% for event in all_events %}
+					<div class="block">
+                        <div class="title"> <a href="{% url 'fdp_app-event_view' home_sections.url event.id %}">{{ event.name }}</a></div>
+                        <div class="subtitle"> Date : {{ event.date }}</div>
+                        {% if event.pictures %} 
+						    <div class="left">
                                 {% for image in event.pictures %}
                                     {% if forloop.first %}
                                         <script type="text/javascript">
@@ -53,8 +52,7 @@
                                         </a>                           
                                     {% endif %}  
                                 {% endfor %}
-							</div>
-                    		<div class="paragraphe">{{ event.content|safe|urlize|linebreaks|truncatewords:100 }}</div>
+						    </div>
                             <a href="javascript:void(viewer_{{event.id}}.show(0))">
                                 <div class="bottom">
                                     {% for image in event.pictures|slice:"1:6" %}
@@ -62,16 +60,15 @@
                                     {% endfor %}
                                 </div>
                             </a>
-					    </div>
-                      	{% endfor %}
-                    </div>
+                        {% endif %}
+                		<div class="paragraphe">{{ event.content|safe|urlize|linebreaks|truncatewords:100 }}</div>  
+				    </div>
+                  	{% endfor %}
+
                 </div>
             </div>
-
-            <div id="inline">
-                {% include "fdp_app/right.html" %}
-            </div>           
         </div>
+
         {% include "fdp_app/footer.html" %}
     </body>
 </html>

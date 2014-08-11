@@ -2,36 +2,34 @@ html, body, div, table, tr, th, td, img, ul, ol, form { margin: 0; padding: 0; }
 
 body
 {
-	background-color: #e4e4e4;
+    background-color: #ffb100;
     font-family: Verdana;
 }
 
 #bloc_page
 {
-    width: 1024px;
+    /*width: 1024px;*/
     padding: 0px;
-    margin: auto;
-}
-
-#inline
-{
-    display: inline-block;
-    vertical-align: top;
-}
-
-.right
-{
-    width: 190px;
+    width:100%;
+    /*margin: auto;*/
 }
 
 .center
 {
-    width: 620px;
+    width: 60%;
+    margin: 0px auto;
 }
 
 .left
 {
-	width: 190px;
+    float:left;
+    width:20%;
+}
+
+.right
+{
+    float:right;
+    width: 20%;
 }
 
 .marge {

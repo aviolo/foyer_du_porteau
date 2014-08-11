@@ -3,8 +3,8 @@
     padding: 0px;
     width: 100%;
     min-width: 1000px;
-    height: 180px;
-    text-align: left;
+    height: 160px;
+    text-align: center;
     position: relative;
     display: block;
     overflow: hidden;
@@ -28,10 +28,14 @@
 }
 
 #header .menu {
-    float:right;
+    float:center;
 }
 
 #header .username {
+    border: 1px dashed #ffffff;
+    color: #ffffff;
+	padding: 3px;
+    border-radius: 5px;
     float:right;
 }
 
@@ -40,12 +44,12 @@
 }
 
 #menu {
-    width: 100%;
+    width: 60%;
     min-width: 1000px;
     height: 30px;
-    text-align: center;
 	display: inline-block;
     background-color: #000000;
+    border-radius: 10px;
 }
 
 #menu li
@@ -62,9 +66,18 @@
     color: #bbbbbb;
 	margin: 8px;
     text-decoration: none;
+    border-radius: 5px;
+    padding: 3px;
 }
 
 #menu a:hover
 {
     color: #ffffff;
+    background-color: #6a6a6a;
+}
+
+#menu a:active
+{
+    background-color: #ffb100;
+    color: #000000;
 }

@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <div class="right">
-    <div class="block">
+    <div class="transparent_block">
         <div class="title">Changements récents</div>
         {% for entry in recent_change %}
             <div id="light_block">
-                <div class="subtitle">{{ entry.title }}</div>
-		    <div class="left">
+            <!--<div class="subtitle">{{ entry.title }}</div>-->
+            {% if entry.pictures %}
+		        <div class="left">
                         {% for image in entry.pictures %}
                             {% if forloop.first %}
                                 {% if entry.type != 'section' %}
@@ -15,11 +16,26 @@
                                 {% endif %} 
                             {% endif %} 
                         {% endfor %}
-		    </div>
+		        </div>
+            {% endif %} 
         	<div class="paragraphe">{{ entry.name }}</div>
 	    </div>
         {% endfor %}
     </div>
+
+    <div class="transparent_block">
+        <div class="title">Prochaines Animations</div>
+        <ul id="section-list">
+            {% for event in next_events %}
+                <li>
+                <a href="{% url 'fdp_app-event_view' event.section.url event.id %}">{{ event.name }}</a>
+                </li>
+            {% endfor %}
+		</ul>
+        <!--<div id="calendar">
+        </div>-->
+    </div>
+
 </div>
 <!--
     <div class="block">
