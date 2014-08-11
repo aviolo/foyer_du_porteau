@@ -68,6 +68,10 @@
 #submenu
 {
     text-align: center;
+	background-color: #fefbe0;
+    border-radius: 0px 0px 10px 10px;
+    width: 60%;
+    margin:-3px auto;
 }
 
 #submenu li

@@ -57,16 +57,20 @@
 						</div>
 
                         <div class="subtitle"> Date : {{ event.date }}</div>
+
                         {% for section in autho_section %}
                             {% if section.section__name == contents_sections.name %}
                                 <a href="{% url 'fdp_app-add_picture_view' contents_sections.url event.id %}">
-                                    <div class="block" style="width:25%;">
-                                        <div class="title">Ajouter des photos</div>
-                                        <img src="{% url 'statics'  'images/add.png' %}" style="width:20%; margin:auto; padding:10px;">
+                                    <div class="light_block" style="width:20%; float:right; border: 2px dashed #f67521;">
+                                        <div class="left">
+                                            <img src="{% url 'statics' 'images/add.png' %}">
+                                        </div>
+                                        <div class="paragraphe"><div class="title">Ajouter des photos</div></div>
                                     </div>
                                 </a>
                             {% endif %}
                         {% endfor %}
+
 	                    {% if event.pictures %}
 						    <div class="left">
                                 <script type="text/javascript">
@@ -91,6 +95,7 @@
                                 </a> 
                             </div>
 	                    {% endif %}
+
                 		<div class="paragraphe">{{ event.content|safe|urlize|linebreaks|truncatewords:100 }}</div>
 				    </div>
                   	{% endfor %}
