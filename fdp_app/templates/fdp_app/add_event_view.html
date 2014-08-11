@@ -21,32 +21,22 @@
     <body>
 		{% include "fdp_app/header.html" %}
         <div id="bloc_page">                       
-            <div id="inline">
-                {% include "fdp_app/left.html" %}
-            </div>
-            <div id="inline">
-                <div class="center">
-				    <div id="content">
-                        <div class="block">
-                            <div class="title_fixe">Menu</div>
-                        </div>
-                        <div>
-                            <form action="/ajouter_evenement" method="post" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                <table>
-                                    {{ event_form }}
-                                </table>
-                                <input type="submit" value="Submit" />
-                            </form>
-                        
-                        </div>
+            {% include "fdp_app/left.html" %}
+            {% include "fdp_app/right.html" %}
+            <div class="center">
+			    <div id="content">
+                    <div class="block">
+                        <div class="title">Menu</div>
+                        <form action="/ajouter_evenement" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <table>
+                                {{ event_form }}
+                            </table>
+                            <input type="submit" value="Submit" />
+                        </form>
                     </div>
                 </div>
             </div>
-
-            <div id="inline">
-                {% include "fdp_app/right.html" %}
-            </div>           
         </div>
         {% include "fdp_app/footer.html" %}
     </body>
