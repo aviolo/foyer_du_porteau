@@ -26,19 +26,20 @@
             <div class="center">
 			    <div id="content">
                     <div class="block">
-                        <div class="title">Menu</div>
+                        <div class="title">Ajouter un évènement</div>
                         <form action="ajouter_evenement" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
-                            <table>
                                 {% for field in  event_form %}
                                     {% if field.name != 'section' %}
                                         <div class="fieldWrapper">
-                                            {{ field.errors }}
-                                            {{ field.label_tag }} {{ field }}
+                                            {% if field.label == 'Name' %}
+                                                Nom de l'évènement : {{ field }} {{ field.errors }}
+                                            {% else %}
+                                                {{ field.label_tag }} {{ field }} {{ field.errors }}
+                                            {% endif %}
                                         </div>
                                     {% endif %}
                                 {% endfor %}
-                            </table>
                             <input type="submit" value="Submit" />
                         </form>
                     </div>
