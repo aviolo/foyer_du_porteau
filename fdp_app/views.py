@@ -5,6 +5,7 @@ from datetime import datetime
 from django.contrib.auth import authenticate, login, logout
 from django.forms import ModelForm, Form
 from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from fdp_app.models import Section
 from fdp_app.models import Event, Picture
@@ -16,6 +17,11 @@ from django.forms import ModelForm, Textarea, ModelChoiceField, ChoiceField, Dat
 from django.template import defaultfilters
 import django.dispatch
 from upload_utils import save_files
+
+def error500(request):
+    response = render(request, "500.html")
+    response.status_code = 500
+    return response
 
 class EventForm(ModelForm):
     file = FileField(required=False)

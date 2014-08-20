@@ -2,13 +2,14 @@ from django.conf.urls import patterns, include, url
 from django.conf import settings
 from django.views.static import serve
 from django.utils.functional import curry
+from django.views.defaults import *
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
-
-handler500 = curry(server_error, template_name='fdp_app.500.html')
+#handler404 = 'mysite.views.error404'
+handler500 = 'fdp_app.views.error500'
 
 urlpatterns = patterns('',
     url(r'^medias/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT, 'show_indexes': settings.DEBUG}, name='medias'),
