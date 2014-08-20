@@ -64,6 +64,10 @@ def save_files(uploaded_file, year, section_name, event_name, event_id, user_id)
                 #if name.lower()[-3:] in IMAGES_EXTENSIONS:
                 if os.path.splitext(name.lower())[-1] in IMAGES_EXTENSIONS:
                     name_img = os.path.basename(name)
+		    filename, extension_file = os.path.splitext(name_img)
+		    new_filename = defaultfilters.slugify(filename)
+		    new_extension = defaultfilters.slugify(extension_file)
+		    name_img = os.path.join(new_filename + '.' + new_extension)
                     image_path = os.path.join(dezip_path, zipfile_name, name_img)
                     image_file = open(image_path, 'w+')
                     image_file.write(zfile.open(name).read())
