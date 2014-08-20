@@ -61,7 +61,6 @@ def common(request):
                     modification_list.append(new_element)
             if len(modification_list)>5 :
                 break
-
     return {
         'username': user,
         'all_sections': all_sections,

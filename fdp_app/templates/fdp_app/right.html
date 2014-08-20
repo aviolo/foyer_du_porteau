@@ -5,19 +5,19 @@
         {% for entry in recent_change %}
             <div id="light_block">
                 <div class="subtitle">{{ entry.title }}</div>
-				<div class="left">
-                    {% for image in entry.pictures %}
-                        {% if forloop.first %}
-                            {% if entry.type != 'section' %}
-                                <img src="{% url 'medias' image.filename %}" >
-                            {% else %}
-                                <img src="{% url 'medias' image %}" >
+		    <div class="left">
+                        {% for image in entry.pictures %}
+                            {% if forloop.first %}
+                                {% if entry.type != 'section' %}
+                                    <img src="{% url 'medias' image.filename %}" >
+                                {% else %}
+                                    <img src="{% url 'medias' image %}" >
+                                {% endif %} 
                             {% endif %} 
-                        {% endif %} 
-                    {% endfor %}
-				</div>
-        		<div class="paragraphe">{{ entry.name }}</div>
+                        {% endfor %}
 		    </div>
+        	<div class="paragraphe">{{ entry.name }}</div>
+	    </div>
         {% endfor %}
     </div>
 </div>
