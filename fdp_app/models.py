@@ -35,6 +35,7 @@ class Section(models.Model):
     picture = models.ImageField("Picture", upload_to="user_pictures", blank=True, null=True, max_length=255)
     url = models.CharField(max_length=255, blank=True, null=True)
     schedule = models.CharField(max_length=255, blank=True, null=True)
+    hide = models.BooleanField(default=False)
     def __unicode__(self):
         return u'section %s' %self.name
 
@@ -49,6 +50,7 @@ class Event(models.Model):
     date = models.DateTimeField('date published', default=datetime.datetime.now)
     section = models.ForeignKey(Section)
     user = models.ForeignKey(User)
+    last_modification_date = models.DateTimeField('date published', default=datetime.datetime.now)
     def __unicode__(self):
         return u'event %s' %self.name
 
