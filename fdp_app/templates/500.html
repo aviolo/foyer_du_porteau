@@ -13,15 +13,34 @@
     </head>
 
     <body>
-	{% include "fdp_app/header.html" %}
-        <div id="bloc_page">                       
-            <div class="center">
-                <div class="block">
-                    <div class="title">Erreur</div>
-                 Erreur du serveur. <br>
-                 Si cette erreur se reproduit veuillez contacter les administrateurs du site</div>
+        <div id="header">
+            <div class="header-bg">
+                <div class="banner"></div>
             </div>
         </div>
-        {% include "fdp_app/footer.html" %}
+        <div id="inline">
+            <div class="center">
+                <div class="block">
+                    <img src="http://gregland.net/img/maintenance.jpg" >
+                    </br>
+                    Nous sommes désolé mais le site du Foyer du Porteau à rencontré un problème.
+                    </br>
+                    Nous faisons tout notre possible pour que celle ci soit corrigé.
+                    </br>
+                    Revenez plus tard.
+                    </br>
+                    Merci.
+                </div>
+            </div>
+        </div>
+
+        <footer id="footer">
+            <div class="footer-bg">
+            <div id="footer_black"></div>
+                <div id="visites"> <script type="text/javascript" language="javascript">d = new Date(); document.write(d.toLocaleDateString());</script> <img src="/tinc?key=HuEsCyqC"> Visiteurs</div>
+                <div id="createurs">Développement web : Flavie Lancereau, Anthony Violo</div>
+                <div id="createurs">Logo du Foyer déssiné par <a href="http://clochettecf.blogspot.fr">Cassandre</a></div>
+            </div>
+        </footer>
     </body>
 </html>
