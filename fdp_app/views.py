@@ -41,6 +41,7 @@ class EventForm(ModelForm):
     class Meta:
         model = Event
         fields = ('name', 'content', 'section', 'date')
+        #fields = ('name', 'content', 'section', 'date', 'last_modification_date')
 
 class PictureForm(Form):
     event = ChoiceField()
@@ -87,6 +88,7 @@ def modify_event_view(request):
 def add_event_view(request):
     home_sections = None
     all_events = None
+    event_form = None
     try:
         home_sections = get_section_infos('foyerduporteau')
         all_events = get_next_thrid_event_in_section(home_sections['index'])
@@ -119,7 +121,7 @@ def add_event_view(request):
         event_form = EventForm(request.POST, request.FILES, instance=Event(user_id=the_user.id))
         event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in section_list]
     csrfContext = RequestContext(request)
-    content = { 'home_sections' : home_sections, 'all_events' : all_events, 'event_form' : event_form, },
+    content = { 'home_sections' : home_sections, 'all_events' : all_events, 'event_form' : event_form,}
     return render_to_response("fdp_app/add_event_view.html", content, context_instance=csrfContext)
 
 def add_picture_view(request):
