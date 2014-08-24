@@ -32,7 +32,18 @@
                         {{ home_sections.content|safe|urlize|linebreaks|truncatewords:150 }}
                         </div>
                     </div>
-
+                    {% for section in autho_section %}
+                        {% if section.section__name == home_sections.name %}
+                            <a href="{% url 'fdp_app-add_event_view' home_sections.url %}">
+                                <div class="transparent_block" style="width:30%; margin:auto;">
+                                    <div class="left">
+                                        <img src="{% url 'statics'  'images/add.png' %}">
+                                    </div>
+                                    <div class="paragraphe">Ajouter un évènement à la section {{ home_sections.name }} </div>
+                                </div>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
                     {% for event in all_events %}
 					<div class="block">
                         <div class="title"> <a href="{% url 'fdp_app-event_view' home_sections.url event.id %}">{{ event.name }}</a></div>

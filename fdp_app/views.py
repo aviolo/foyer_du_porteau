@@ -59,12 +59,18 @@ def home_construction_view(request):
 def home_view(request):
     home_sections = None
     all_events = None
+    all_sections_authorization = None
+    user = None
     try:
         home_sections = get_section_infos('foyerduporteau')
         all_events = get_next_thrid_event_in_section(home_sections['index'])
-    except IndexError,e:
-        on_error('Error in home view : %s' %e)
-    content = { 'home_sections' : home_sections, 'all_events' : all_events,}
+        user = request.user
+        the_user = models.User.objects.filter(username=user)[0]
+        section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+        all_sections_authorization = section_query.values('section__name', 'section__id')
+    except IndexError, e:
+        pass
+    content = { 'home_sections' : home_sections, 'all_events' : all_events, 'autho_section' : all_sections_authorization}
     return render_to_response("fdp_app/home_view.html", content, context_instance=RequestContext(request))
 
 def modify_profile_view(request):
@@ -158,13 +164,11 @@ def add_event_view(request, section_slug):
     section_name = None
     try:
         sections_infos = get_section_infos(section_slug)
-        all_events = get_next_thrid_event_in_section(sections_infos['index'])
     except IndexError,e:
         on_error('Error in add event view 1 : %s' %e)
     user = request.user
     the_user = models.User.objects.filter(username=user)[0]
     if request.method == 'POST':
-        print "formulaire valide"
         event_form = EventForm(request.POST, request.FILES, instance=Event(user_id=the_user.id, section_id=sections_infos['index']))
         if event_form.is_valid():
             try:
@@ -178,7 +182,6 @@ def add_event_view(request, section_slug):
                     save_files(request.FILES['file'], year, section_name, event_name, new_event.pk, the_user.id)
             except IndexError, e:
                 on_error('Error in add event view 2 : %s' %e)
-            #section_view(request, section_slug)
             section_contact = get_section_contact(sections_infos['index'])
             all_events = get_all_event_in_section(sections_infos['index'])
             content = { 'contents_sections' : sections_infos, 'section_contact' : section_contact, 'all_events' : all_events, }
@@ -186,10 +189,9 @@ def add_event_view(request, section_slug):
         else:
             on_error('le formulaire est mal rempli', will_send_mail=False)
     else:
-        print "formulaire invalide"
         event_form = EventForm(request.POST, request.FILES, instance=Event(user_id=the_user.id))
     csrfContext = RequestContext(request)
-    content = { 'home_sections' : home_sections, 'all_events' : all_events, 'event_form' : event_form,}
+    content = { 'event_form' : event_form,}
     return render_to_response("fdp_app/add_event_view.html", content, context_instance=csrfContext)
 
 def add_picture_view(request):
@@ -288,6 +290,7 @@ def section_view(request, section_slug):
     all_events = None
     contents_sections = None
     section_contact = None
+    all_sections_authorization = None
     try:
         contents_sections = get_section_infos(section_slug)
         section_contact = get_section_contact(contents_sections['index'])
@@ -296,11 +299,8 @@ def section_view(request, section_slug):
         the_user = models.User.objects.filter(username=user)[0]
         section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
         all_sections_authorization = section_query.values('section__name', 'section__id')
-        print '----------------------------------'
-        print section_query
-        print '----------------------------------'
     except IndexError, e:
-        on_error('Error in section %s view : %s' %(section_slug,e))
+        pass
     content = { 'contents_sections' : contents_sections, 'section_contact' : section_contact, 'all_events' : all_events, 'autho_section' : all_sections_authorization}
     return render_to_response("fdp_app/section_view.html", content, context_instance=RequestContext(request))
 
