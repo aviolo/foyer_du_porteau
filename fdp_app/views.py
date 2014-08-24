@@ -305,17 +305,25 @@ def infos_view(request, section_slug):
     content = { 'contents_sections' : contents_sections,'all_events' : all_events, }
     return render_to_response("fdp_app/infos_view.html", content, context_instance=RequestContext(request))
 
-def activites_view(request, section_slug):
+def activites_view(request):
+    #all_sections = models.Section.objects.all().order_by('name') 
     return render_to_response("fdp_app/activites_view.html", {}, context_instance=RequestContext(request))
 
-def pictures_view(request):
+def pictures_view(request, year=''):
+    if year == '' : year = datetime.now().year
     all_events = list()
-    for event in models.Event.objects.filter(date__lte=datetime.now()).order_by('date').reverse():
-        if event:
-            event.pictures = get_all_pictures_in_event(event)
-            if len(event.pictures) > 1:
+    if year != '0000' :
+        for event in models.Event.objects.filter(date__year=year, date__lte=datetime.now()).order_by('date').reverse():
+            if event:
+                event.pictures = get_all_pictures_in_event(event)
                 all_events.append(event)
-    return render_to_response("fdp_app/pictures_view.html", {'all_events':all_events }, context_instance=RequestContext(request))
+    else :
+        for event in models.Event.objects.filter(date__gte=datetime.now()).order_by('date'):
+            if event:
+                event.pictures = get_all_pictures_in_event(event)
+                all_events.append(event)
+    years = list(set([event.date.year for event in models.Event.objects.filter(date__lte=datetime.now())]))
+    return render_to_response("fdp_app/pictures_view.html", {'all_events':all_events, 'years':years }, context_instance=RequestContext(request))
 
 def event_view(request, section_slug, event_slug):
     event = models.Event.objects.filter(id=event_slug)[0]

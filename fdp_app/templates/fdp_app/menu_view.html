@@ -14,48 +14,41 @@
     <body>
 		{% include "fdp_app/header.html" %}
         <div id="bloc_page">                       
-            <div id="inline">
-                {% include "fdp_app/left.html" %}
-            </div>
-            <div id="inline">
-                <div class="center">
-				    <div id="content">
-                        <div class="block">
-                            <div class="title_fixe">Menu</div>
-                            <div class="content">
-                                <!--<a href="{% url 'fdp_app-modify_profile_view' %}">
-                                    <div class="block" style="width:25%;">
-                                        <div class="title">Modifier mon profil</div>
-                                        <img src="{% url 'statics'  'images/profil.png' %}" style="width:80%; margin:auto; padding:10px;">
-                                    </div>
-                                </a>-->
-                                <a href="{% url 'fdp_app-add_event_view' %}">
-                                    <div class="block" style="width:25%;">
-                                        <div class="title">Ajouter un évènement</div>
-                                        <img src="{% url 'statics'  'images/add.png' %}" style="width:80%; margin:auto; padding:10px;">
-                                    </div>
-                                </a>
-                                <a href="{% url 'fdp_app-add_picture_view' %}">
-                                    <div class="block" style="width:25%;">
-                                        <div class="title">Ajouter des photos</div>
-                                        <img src="{% url 'statics'  'images/add.png' %}" style="width:80%; margin:auto; padding:10px;">
-                                    </div>
-                                </a>
-                                <a href="{% url 'fdp_app-modify_event_view' %}">
-                                    <div class="block" style="width:25%;">
-                                        <div class="title">Modifier un évènement</div>
-                                        <img src="{% url 'statics'  'images/change.png' %}" style="width:80%; margin:auto; padding:10px;">
-                                    </div>
-                                </a>
-                            </div>
+            {% include "fdp_app/left.html" %}
+            {% include "fdp_app/right.html" %}
+            <div class="center">
+			    <div id="content">
+                    <div class="block">
+                        <div class="title_fixe">Menu</div>
+                        <div class="content">
+                            <!--<a href="{% url 'fdp_app-modify_profile_view' %}">
+                                <div class="block" style="width:25%;">
+                                    <div class="title">Modifier mon profil</div>
+                                    <img src="{% url 'statics'  'images/profil.png' %}" style="width:80%; margin:auto; padding:10px;">
+                                </div>
+                            </a>-->
+                            <a href="{% url 'fdp_app-add_event_view' %}">
+                                <div class="block" style="width:25%;">
+                                    <div class="title">Ajouter un évènement</div>
+                                    <img src="{% url 'statics'  'images/add.png' %}" style="width:80%; margin:auto; padding:10px;">
+                                </div>
+                            </a>
+                            <a href="{% url 'fdp_app-add_picture_view' %}">
+                                <div class="block" style="width:25%;">
+                                    <div class="title">Ajouter des photos</div>
+                                    <img src="{% url 'statics'  'images/add.png' %}" style="width:80%; margin:auto; padding:10px;">
+                                </div>
+                            </a>
+                            <a href="{% url 'fdp_app-modify_event_view' %}">
+                                <div class="block" style="width:25%;">
+                                    <div class="title">Modifier un évènement</div>
+                                    <img src="{% url 'statics'  'images/change.png' %}" style="width:80%; margin:auto; padding:10px;">
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div id="inline">
-                {% include "fdp_app/right.html" %}
-            </div>           
         </div>
         {% include "fdp_app/footer.html" %}
     </body>

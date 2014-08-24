@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <link rel="stylesheet" href="{% url 'statics' 'stylesheets/header.css' %}" />
+        <link rel="stylesheet" href="{% url 'statics'  'stylesheets/style.css' %}" />
+        <link rel="stylesheet" href="{% url 'statics'  'stylesheets/font.css' %}" />
+        <link rel="stylesheet" href="{% url 'statics'  'stylesheets/blocks.css' %}" />
+        <link rel="stylesheet" href="{% url 'statics' 'stylesheets/footer.css' %}" />
+        <title>Foyer du Porteau</title>
+    </head>
+
+    <body>
+		{% include "fdp_app/header.html" %}
+        <div id="bloc_page">                       
+                {% include "fdp_app/left.html" %}
+                {% include "fdp_app/right.html" %}
+                <div class="center">
+				    <div id="content">
+                        <div class="block">
+	                      {% for section in all_sections %}
+                            {% if section.types == 0 and section.name != 'Foyer du Porteau' and section.hide != 1 %}
+                                <a href="{% url 'fdp_app-section_view' section.url %}">
+		                            <div id="light_block">
+                                        <div class="light_left"><img src="{% url 'medias' section.picture %}" ></div>
+                                        <div class="paragraphe">
+                                            <div class="title">{{ section.name }}</div>
+                                            <div class="subtitle">{{section.schedule}}</div>
+                                        </div>
+		                            </div>
+                                </a>
+                            {% endif %}
+	                      {% endfor %}
+                        </div>
+                    </div>
+                </div>
+        </div>
+        {% include "fdp_app/footer.html" %}
+    </body>
+</html>

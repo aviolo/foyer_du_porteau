@@ -24,6 +24,8 @@
                 {% elif section.name == 'Précédent site' %}
                     <li><a href="http://www.old.foyerduporteau.net/">{{ section.name }}</a></li>
                 {% elif section.name == 'Photos' %}
+                    <li><a href="{% url 'fdp_app-pictures_view' 2014 %}">{{ section.name }}</a></li>
+                {% elif section.name == 'Animations' %}
                     <li><a href="{% url 'fdp_app-pictures_view' %}">{{ section.name }}</a></li>
                 {% else %}
 		            <li><a href="{% url 'fdp_app-infos_view' section.url %}">{{ section.name }}</a></li>

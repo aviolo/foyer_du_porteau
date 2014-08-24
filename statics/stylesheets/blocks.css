@@ -2,8 +2,8 @@
 {
 	background-color: #fefbe0;
     border: 1px solid #f67521;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
 	overflow : hidden;
 	margin: 8px;
     padding: 8px;
@@ -131,3 +131,9 @@
 	width: 33%;
 }
 
+#light_block .light_left
+{
+	float: left;
+	margin: 2px;
+	width: 10%;
+}

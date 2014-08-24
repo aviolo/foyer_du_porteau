@@ -13,38 +13,38 @@
     <body>
 		{% include "fdp_app/header.html" %}
         <div id="bloc_page">                       
-            <div id="inline">
-                {% include "fdp_app/left.html" %}
-            </div>
-            <div id="inline">
-                <div class="center">
-				    <div id="content">
-                        <script type="text/javascript" src="http://slideshow.triptracker.net/slide.js"></script>
-                        {% for event in all_events %}
-						<div class="block">
-                            <div class="title">{{ event.name }}</div>
-                            <div class="subtitle"> Date : {{ event.date }}</div>
-                            <script type="text/javascript">
-                                var viewer_{{event.id}} = new PhotoViewer();
-                                {% for image in event.pictures %}
-                                    viewer_{{event.id}}.add("{% url 'medias' image.filename %}");
-                                {% endfor %}
-                            </script>
-                            <a href="javascript:void(viewer_{{event.id}}.show(0))">
-                            <div class="bottom">
-                                {% for image in event.pictures|slice:":5" %}
-                                    <img class="images" src="{% url 'medias' image.miniature %}">                           
-                                {% endfor %}</div>
-                            </a>
-						    </div>
+            {% include "fdp_app/left.html" %}
+            {% include "fdp_app/right.html" %}
+            <div class="center">
+			    <div id="content">
+                    <div id="submenu">
+                        {% for year in years %}
+                            <li><a href="{% url 'fdp_app-pictures_view' year %}">{{ year }}</a></li>
                       	{% endfor %}
+                        <li><a href="{% url 'fdp_app-pictures_view' '0000' %}">Prochaines animations</a></li>
                     </div>
+
+                    <script type="text/javascript" src="http://slideshow.triptracker.net/slide.js"></script>
+                    {% for event in all_events %}
+					<div class="block">
+                        <div class="title">{{ event.name }}</div>
+                        <div class="subtitle"> Date : {{ event.date }}</div>
+                        <script type="text/javascript">
+                            var viewer_{{event.id}} = new PhotoViewer();
+                            {% for image in event.pictures %}
+                                viewer_{{event.id}}.add("{% url 'medias' image.filename %}");
+                            {% endfor %}
+                        </script>
+                        <a href="javascript:void(viewer_{{event.id}}.show(0))">
+                        <div class="bottom">
+                            {% for image in event.pictures|slice:":5" %}
+                                <img class="images" src="{% url 'medias' image.miniature %}">                           
+                            {% endfor %}</div>
+                        </a>
+					    </div>
+                  	{% endfor %}
                 </div>
             </div>
-            
-            <div id="inline">
-                {% include "fdp_app/right.html" %}
-            </div>           
         </div>
         {% include "fdp_app/footer.html" %}
     </body>
