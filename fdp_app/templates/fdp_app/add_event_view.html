@@ -27,7 +27,7 @@
 			    <div id="content">
                     <div class="block">
                         <div class="title">Menu</div>
-                        <form action="/ajouter_evenement" method="post" enctype="multipart/form-data">
+                        <form action="ajouter_evenement" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             <table>
                                 {% for field in  event_form %}

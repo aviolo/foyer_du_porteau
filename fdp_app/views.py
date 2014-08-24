@@ -40,7 +40,8 @@ class EventForm(ModelForm):
     file = FileField(required=False)
     class Meta:
         model = Event
-        fields = ('name', 'content', 'section', 'date')
+        fields = ('name', 'content', 'date')
+        #fields = ('name', 'content', 'section', 'date')
 
 class PictureForm(Form):
     event = ChoiceField()
@@ -156,18 +157,15 @@ def add_event_view(request, section_slug):
     event_form = None
     section_name = None
     try:
-        home_sections = get_section_infos('foyerduporteau')
-        section_info = get_section_infos(section_slug)
-        all_events = get_next_thrid_event_in_section(home_sections['index'])
+        sections_infos = get_section_infos(section_slug)
+        all_events = get_next_thrid_event_in_section(sections_infos['index'])
     except IndexError,e:
         on_error('Error in add event view 1 : %s' %e)
     user = request.user
     the_user = models.User.objects.filter(username=user)[0]
-    #section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
-    #section_list =  section_query.values('section__name', 'section__id')
     if request.method == 'POST':
-        event_form = EventForm(request.POST, request.FILES, instance=Event(user_id=the_user.id))
-        #event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in section_list]
+        print "formulaire valide"
+        event_form = EventForm(request.POST, request.FILES, instance=Event(user_id=the_user.id, section_id=sections_infos['index']))
         if event_form.is_valid():
             try:
                 new_event = event_form.save()
@@ -178,15 +176,18 @@ def add_event_view(request, section_slug):
                     section_name = defaultfilters.slugify(section_name)
                     event_name = defaultfilters.slugify(event.name)
                     save_files(request.FILES['file'], year, section_name, event_name, new_event.pk, the_user.id)
-            except IndexError,e:
+            except IndexError, e:
                 on_error('Error in add event view 2 : %s' %e)
-            content = { 'home_sections' : home_sections,'all_events' : all_events, }
-            return render_to_response("fdp_app/menu_view.html", content, context_instance=RequestContext(request))
+            #section_view(request, section_slug)
+            section_contact = get_section_contact(sections_infos['index'])
+            all_events = get_all_event_in_section(sections_infos['index'])
+            content = { 'contents_sections' : sections_infos, 'section_contact' : section_contact, 'all_events' : all_events, }
+            return render_to_response("fdp_app/section_view.html", content, context_instance=RequestContext(request))
         else:
             on_error('le formulaire est mal rempli', will_send_mail=False)
     else:
+        print "formulaire invalide"
         event_form = EventForm(request.POST, request.FILES, instance=Event(user_id=the_user.id))
-        #event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in section_list]
     csrfContext = RequestContext(request)
     content = { 'home_sections' : home_sections, 'all_events' : all_events, 'event_form' : event_form,}
     return render_to_response("fdp_app/add_event_view.html", content, context_instance=csrfContext)
