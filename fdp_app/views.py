@@ -41,7 +41,6 @@ class EventForm(ModelForm):
     class Meta:
         model = Event
         fields = ('name', 'content', 'section', 'date')
-        #fields = ('name', 'content', 'section', 'date', 'last_modification_date')
 
 class PictureForm(Form):
     event = ChoiceField()
@@ -149,6 +148,8 @@ def add_picture_view(request):
                         break
                 if event_id > 0:
                     event = get_event_by_id(event_id)
+                    event.last_modification_date = datetime.now()
+                    event.save()
                     year = str(event.date.year)
                     section_name = get_section(event.section_id)
                     section_name = defaultfilters.slugify(section_name)
