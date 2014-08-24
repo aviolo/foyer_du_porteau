@@ -19,15 +19,23 @@
 			    <div id="content">
                     <div class="block">
                         <div class="title">{{ contents_sections.name }}</div>
-                        <div class="subtitle"> Responsable : 
-                            {% for contact in section_contact %}
-                                {{ contact.name }}
-                                {% if contact.number_phone %}
-                                    {{ contact.number_phone }}
-                                {% endif %}
-                                <br> 
-                            {% endfor %}
-                        Horaires : {{ contents_sections.schedule }}</div>
+                            <div class="subtitle"> Responsable : 
+                                {% for contact in section_contact %}
+                                    {{ contact.name }}
+                                    {% if contact.number_phone %}
+                                        {{ contact.number_phone }}
+                                    {% endif %}
+                                    <br>
+                                {% endfor %}
+                                Horaires : {{ contents_sections.schedule }}
+                                {{ contents_sections.id }}
+                                <a href="{% url 'fdp_app-add_event_view' contents_sections.url %}">
+                                    <div class="block" style="width:15%;">
+                                        <div class="title">Ajouter un évènement</div>
+                                        <img src="{% url 'statics'  'images/add.png' %}" style="width:40%; margin:auto; padding:10px;">
+                                    </div>
+                                </a>
+                            </div>
 						<div class="left">
 		                    {% if contents_sections.picture %}
 		                        <img src="{% url 'medias' contents_sections.picture %}" >

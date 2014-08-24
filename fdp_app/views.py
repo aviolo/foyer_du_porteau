@@ -150,29 +150,31 @@ def modify_event_view(request):
         section = None
         '''
 
-def add_event_view(request):
+def add_event_view(request, section_slug):
     home_sections = None
     all_events = None
     event_form = None
+    section_name = None
     try:
         home_sections = get_section_infos('foyerduporteau')
+        section_info = get_section_infos(section_slug)
         all_events = get_next_thrid_event_in_section(home_sections['index'])
     except IndexError,e:
         on_error('Error in add event view 1 : %s' %e)
     user = request.user
     the_user = models.User.objects.filter(username=user)[0]
-    section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
-    section_list =  section_query.values('section__name', 'section__id')
+    #section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+    #section_list =  section_query.values('section__name', 'section__id')
     if request.method == 'POST':
         event_form = EventForm(request.POST, request.FILES, instance=Event(user_id=the_user.id))
-        event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in section_list]
+        #event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in section_list]
         if event_form.is_valid():
             try:
                 new_event = event_form.save()
                 if request.FILES:
                     event = get_event_by_name(request.POST["name"])
                     year = str(event.date.year)
-                    section_name = get_section(event.section_id)
+                    section_name = get_section_name(event.section_id)
                     section_name = defaultfilters.slugify(section_name)
                     event_name = defaultfilters.slugify(event.name)
                     save_files(request.FILES['file'], year, section_name, event_name, new_event.pk, the_user.id)
@@ -184,7 +186,7 @@ def add_event_view(request):
             on_error('le formulaire est mal rempli', will_send_mail=False)
     else:
         event_form = EventForm(request.POST, request.FILES, instance=Event(user_id=the_user.id))
-        event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in section_list]
+        #event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in section_list]
     csrfContext = RequestContext(request)
     content = { 'home_sections' : home_sections, 'all_events' : all_events, 'event_form' : event_form,}
     return render_to_response("fdp_app/add_event_view.html", content, context_instance=csrfContext)
@@ -217,7 +219,7 @@ def add_picture_view(request):
                     event.last_modification_date = datetime.now()
                     event.save()
                     year = str(event.date.year)
-                    section_name = get_section(event.section_id)
+                    section_name = get_section_name(event.section_id)
                     section_name = defaultfilters.slugify(section_name)
                     event_name = defaultfilters.slugify(event.name)
                     save_files(request.FILES['file'], year, section_name, event_name, event_id, the_user.id)
@@ -336,7 +338,7 @@ def get_section_infos(section):
     contents_sections = dict(index=section.id, name=section.name, content=section.content, picture=section.picture, schedule=section.schedule, url=section.url)
     return contents_sections
 
-def get_section(section_id):
+def get_section_name(section_id):
     section_name = None
     section = Section.objects.filter(id=section_id)[0]
     return section.name

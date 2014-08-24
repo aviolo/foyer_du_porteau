@@ -30,7 +30,14 @@
                         <form action="/ajouter_evenement" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             <table>
-                                {{ event_form }}
+                                {% for field in  event_form %}
+                                    {% if field.name != 'section' %}
+                                        <div class="fieldWrapper">
+                                            {{ field.errors }}
+                                            {{ field.label_tag }} {{ field }}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
                             </table>
                             <input type="submit" value="Submit" />
                         </form>
