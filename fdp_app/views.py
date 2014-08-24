@@ -292,9 +292,16 @@ def section_view(request, section_slug):
         contents_sections = get_section_infos(section_slug)
         section_contact = get_section_contact(contents_sections['index'])
         all_events = get_all_event_in_section(contents_sections['index'])
+        user = request.user
+        the_user = models.User.objects.filter(username=user)[0]
+        section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+        all_sections_authorization = section_query.values('section__name', 'section__id')
+        print '----------------------------------'
+        print section_query
+        print '----------------------------------'
     except IndexError, e:
         on_error('Error in section %s view : %s' %(section_slug,e))
-    content = { 'contents_sections' : contents_sections, 'section_contact' : section_contact, 'all_events' : all_events,}
+    content = { 'contents_sections' : contents_sections, 'section_contact' : section_contact, 'all_events' : all_events, 'autho_section' : all_sections_authorization}
     return render_to_response("fdp_app/section_view.html", content, context_instance=RequestContext(request))
 
 def infos_view(request, section_slug):
