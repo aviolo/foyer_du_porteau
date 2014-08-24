@@ -25,42 +25,13 @@ def common(request):
 
     next_events = models.Event.objects.filter(date__gte=datetime.now()).order_by('date')[:10]
 
-    modification_list = list()
-    for each in recentActions:
-        new_element = dict()
-        if each.content_type.name == 'section' or each.content_type.name == 'picture' or each.content_type.name == 'event':
-            new_element['type'] = each.content_type.name
-            try :
-                edited_object = each.get_edited_object()
-            except Exception:
-                edited_object = None
-            if edited_object and (each.is_change or each.is_addition) : 
-                if each.content_type.name == 'picture' :
-                    new_element['name'] = edited_object.event.name
-                    new_element['pictures'] = get_all_pictures_in_event(edited_object.event)
-                    if each.is_change() :
-                        new_element['title'] = 'Photo modifiée :'
-                    else :
-                        new_element['title'] = 'Nouvelle(s) photo(s) :'
-                elif each.content_type.name == 'section' : 
-                    new_element['name'] = edited_object.name
-                    new_element['pictures'] = [edited_object.picture]
-                    if each.is_change() : 
-                        new_element['title'] = 'Description modifiée :'
-                    else :
-                       new_element['title'] = 'Nouvelle section :' 
-                elif each.content_type.name == 'event' :
-                    new_element['name'] = edited_object.name
-                    new_element['pictures'] = get_all_pictures_in_event(edited_object)
-                    if each.is_change() : 
-                        new_element['title'] = 'Description modifiée :'
-                    else : 
-                        new_element['title'] = 'Nouvel évènement :'
+    modification_list = models.Event.objects.all().order_by('last_modification_date').reverse()[:5]
 
-                if not is_element_already_logged(new_element, modification_list) :
-                    modification_list.append(new_element)
-            if len(modification_list)>5 :
-                break
+    for event in modification_list:
+        if event:
+            event.pictures = get_all_pictures_in_event(event)
+            event.section_slug = event.section.url
+
     return {
         'username': user,
         'all_sections': all_sections,
