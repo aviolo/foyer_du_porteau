@@ -46,6 +46,11 @@ class PictureForm(Form):
     event = ChoiceField()
     file = FileField(required=True)
 
+class modifyEventForm(EventForm):
+    section = ChoiceField()
+    event = ChoiceField()
+    #event_form = EventForm()
+
 #views
 def home_construction_view(request):
     return render_to_response("fdp_app/home_construction_view.html", context_instance=RequestContext(request))
@@ -73,16 +78,77 @@ def modify_profile_view(request):
     return render_to_response("fdp_app/modify_profile_view.html", content, context_instance=RequestContext(request))
 
 def modify_event_view(request):
-    #event_form = EventForm()
     home_sections = None
-    all_events = None
+    all_sections = None
+    section_list_form = None
+    modify_event_form = modifyEventForm()
+    user = request.user
+    the_user = models.User.objects.filter(username=user)[0]
+    section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+    all_sections = section_query.values('section__name', 'section__id')
+    modify_event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in all_sections]
+    return render_to_response("fdp_app/modify_event_view.html", { 
+            'home_sections' : home_sections,
+            'all_events' : all_sections,
+            'select_section_form' : section_list_form,
+            }, context_instance=RequestContext(request))
+    '''
+    return render_to_response("fdp_app/modify_event_view.html", { 
+                'home_sections' : home_sections,
+                'modify_event_form' : modify_event_form,
+                }, context_instance=RequestContext(request))'''
+                
+    '''
+    print "--------------------- 1 ---------------------"
     try:
-        home_sections = get_section_infos('foyerduporteau')
-        all_events = get_next_thrid_event_in_section(home_sections['index'])
-    except IndexError,e:
-        on_error('Error in modify event view : %s' %e)
-    content = { 'home_sections' : home_sections, 'all_events' : all_events,}#'event_form' : event_form,
-    return render_to_response("fdp_app/modify_event_view.html", content, context_instance=RequestContext(request))
+        user = request.user
+        the_user = models.User.objects.filter(username=user)[0]
+        section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+        all_sections = section_query.values('section__name', 'section__id')
+        print "--------------------- 2 ---------------------"
+        if request.method == 'POST':
+            print request.POST
+            print "----------------------------------------------"
+
+            print "----------------  3 ----------------------"
+            print section_list_form
+            print "--------------------------------------"
+            #section_list_form = SelectSectionForm()
+            #section_list_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in all_sections]
+            event_form = EventForm()
+            event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in all_sections]
+            print "----------------------- 4 -----------------------"
+            print event_form
+            if event_form.is_valid():
+                print "----------------  5 ----------------------"
+                print "is valid"
+                #try:
+                     #section_list_form.save()
+                #except IndexError:
+                    #section = None
+                return render_to_response("fdp_app/modify_event_view.html", { 
+                'home_sections' : home_sections,
+                ' section_list_form' : section_list_form,
+                }, context_instance=RequestContext(request))
+            else:
+                csrfContext = RequestContext(request)
+                return render_to_response("fdp_app/modify_event_view.html", { 
+                'home_sections' : home_sections,
+                'all_events' : all_sections,
+                'select_section_form' : section_list_form,
+                }, context_instance=csrfContext)
+        else:
+            section_list_form = SelectSectionForm()
+            section_list_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in all_sections]
+        csrfContext = RequestContext(request)
+        return render_to_response("fdp_app/modify_event_view.html", { 
+            'home_sections' : home_sections,
+            'all_events' : all_sections,
+            'select_section_form' : section_list_form,
+            }, context_instance=csrfContext)
+    except IndexError:
+        section = None
+        '''
 
 def add_event_view(request):
     home_sections = None

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -7,8 +7,74 @@
         <link rel="stylesheet" href="{% url 'statics'  'stylesheets/font.css' %}" />
         <link rel="stylesheet" href="{% url 'statics'  'stylesheets/blocks.css' %}" />
         <link rel="stylesheet" href="{% url 'statics' 'stylesheets/footer.css' %}" />
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
         <title>Foyer du Porteau</title>
         <script type="text/javascript" src="http://slideshow.triptracker.net/slide.js"></script>
+        <script type="text/javascript" src="/medias/statics/javascripts/jquery.js"></script>
+        <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+        <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+        <script src="/medias/statics/javascripts/jquery-ui-timepicker-addon.js"></script>
+{% comment  %}
+        <!--
+        <script type="text/javascript">
+	        $(document).ready(function()
+            {
+	            $('#id_section').change(function()
+                {
+		          var urlSubmit = $(this).attr('action');
+		          $.ajax(
+                  {
+/*
+		            type: "GET",
+                    dataType: "json",
+		            "_comment":url: "{% url 'fdp_app-event_name' %}",
+		            data: {section_name : $(this).val()},
+		            success: function(data)
+                    {
+                      var html;
+                      html += "<tr><th><label>Evenement:</label></th>";
+                      html += "<td><select name=" + data.name + " id=\"event_name\">";
+                      for(var i = 0; i < data.event_choices.length; i++) 
+                        html += "<option value=" + data.event_choices[i].value + ">" + data.event_choices[i].label + "</option>";
+                      html += "</select></td></tr>"
+			          $("#event_choice").html(html);
+                      $('#event_name').change(function()
+                      {
+		                var urlSubmit = $(this).attr('action');
+                        $.ajax(
+                        {
+		                  type: "GET",
+                          dataType: "json",
+		                  url: "{% url 'fdp_app-event_content' %}",
+		                  data: {event_id : $(this).val()},
+		                  success: function(data)
+                          {
+                            var html;
+                            var event_name = data.event_contents[0].event_name;
+                            var event_content = data.event_contents[0].event_content;
+                            var event_date = data.event_contents[0].event_date;
+                            html += "<tr><th><label>Nom:</label></th>";
+                            html += "<td><ul class=\"errorlist\"><li>Ce champ est obligatoire.</li></ul>";
+                            html += "<input id=\"id_name\" value=\"" + event_name + "\" type=\"text\" name=\"name\" maxlength=\"255\"/\></td></tr>";
+                            html += "<tr><th><label>Contenus:</label></th>";
+                            html += "<td><textarea id=\"id_content\" rows=\"10\" cols=\"40\" name=\"content\">" + event_content + "</textarea></td></tr>"
+                            html += "<tr><th><label>Date de l'évènement:</label></th>";
+                            html += "<td><ul class=\"errorlist\"><li>Ce champ est obligatoire.</li></ul>";
+                            html += "<input type=\"text\" name=\"date\" id=\"id_date\" value=\"" + event_date + "\"/\>";
+                            html += "<input type=\"hidden\" name=\"initial-date\" id=\"init_id_date\" /\></td></tr>";
+                            $("#event_content_fill").html(html);
+                            $(function() {
+                                $('#id_date').datetimepicker({ dateFormat: 'yy-mm-dd' });
+                            });
+                          }
+                        });
+	                  });
+			        }
+		          }*/);
+	            });
+            }
+	    </script>-->
+{% endcomment %}
     </head>
 
     <body>
@@ -24,7 +90,17 @@
                             <div class="title_fixe">Menu</div>
                         </div>
                         <div>
-                            test
+                            <form action="/modifier_evenement" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+                                {% csrf_token %}
+
+                                    <table>
+                                        {{ modify_event_form }}
+                                    </table>
+                                    <table id="event_choice"></table>
+                                    <table id="event_content_fill"></table>
+                                <input type="submit" value="Submit" />
+                            </form>
+                            -->
                         </div>
                     </div>
                 </div>
