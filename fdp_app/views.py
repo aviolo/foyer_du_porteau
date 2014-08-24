@@ -275,9 +275,13 @@ def login_view(request):
                 try:
                     home_sections = get_section_infos('foyerduporteau')
                     all_events = get_next_thrid_event_in_section(home_sections['index'])
+                    user = request.user
+                    the_user = models.User.objects.filter(username=user)[0]
+                    section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+                    all_sections_authorization = section_query.values('section__name', 'section__id')
                 except IndexError,e :
                     on_error('Error in login view : %s' %e)
-                content = {'home_sections' : home_sections, 'all_events' : all_events, 'username' : user,}
+                content = {'home_sections' : home_sections, 'all_events' : all_events, 'username' : user, 'autho_section' : all_sections_authorization}
                 return render_to_response("fdp_app/home_view.html", content, context_instance=RequestContext(request))
             else:
                 state = "Your account is not active, please contact the site admin."
