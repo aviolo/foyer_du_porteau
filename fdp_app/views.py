@@ -46,8 +46,12 @@ class PictureForm(Form):
     file = FileField(required=True)
 
 class modifyEventForm(EventForm):
+    file = FileField(required=False)
     section = ChoiceField()
-    event = ChoiceField()
+    class Meta:
+        model = Event
+        fields = ('name', 'content', 'date')
+    #event = ChoiceField()
     #event_form = EventForm()
 
 #views
@@ -82,7 +86,7 @@ def modify_profile_view(request):
     content = { 'home_sections' : home_sections, 'all_events' : all_events,}
     return render_to_response("fdp_app/modify_profile_view.html", content, context_instance=RequestContext(request))
 
-def modify_event_view(request):
+def modify_event_view(request, section_slug, event_slug):
     home_sections = None
     all_sections = None
     section_list_form = None
@@ -96,7 +100,21 @@ def modify_event_view(request):
             'home_sections' : home_sections,
             'all_events' : all_sections,
             'select_section_form' : section_list_form,
+            'modify_event_form' : modify_event_form,
             }, context_instance=RequestContext(request))
+    '''
+    modify_event_form = modifyEventForm()
+    user = request.user
+    the_user = models.User.objects.filter(username=user)[0]
+    section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+    all_sections = section_query.values('section__name', 'section__id')
+    modify_event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in all_sections]
+    return render_to_response("fdp_app/modify_event_view.html", { 
+            'home_sections' : home_sections,
+            'all_events' : all_sections,
+            'select_section_form' : section_list_form,
+            }, context_instance=RequestContext(request))
+    '''
     '''
     return render_to_response("fdp_app/modify_event_view.html", { 
                 'home_sections' : home_sections,

@@ -91,16 +91,14 @@
                         </div>
                         <div>
                             <form action="/modifier_evenement" method="post" enctype="multipart/form-data" accept-charset="utf-8">
-                                {% csrf_token %}
-
-                                    <table>
-                                        {{ modify_event_form }}
-                                    </table>
-                                    <table id="event_choice"></table>
-                                    <table id="event_content_fill"></table>
-                                <input type="submit" value="Submit" />
+                            {% csrf_token %}
+                                <table>
+                                    {{ modify_event_form }}
+                                </table>
+                                <table id="event_choice"></table>
+                                <table id="event_content_fill"></table>
+                            <input type="submit" value="Submit" />
                             </form>
-                            -->
                         </div>
                     </div>
                 </div>
