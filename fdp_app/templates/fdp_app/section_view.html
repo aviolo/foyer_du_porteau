@@ -9,7 +9,6 @@
         <link rel="stylesheet" href="{% url 'statics' 'stylesheets/footer.css' %}" />
         <title>Foyer du Porteau</title>
     </head>
-
     <body>
 		{% include "fdp_app/header.html" %}
         <div id="bloc_page">                       
@@ -66,6 +65,14 @@
                                             <img src="{% url 'statics' 'images/add.png' %}">
                                         </div>
                                         <div class="paragraphe"><div class="title">Ajouter des photos</div></div>
+                                    </div>
+                                </a>
+                                <a href="{% url 'fdp_app-modify_event_view' contents_sections.url event.id %}">
+                                    <div class="light_block" style="width:20%; float:right; border: 2px dashed #f67521;">
+                                        <div class="left">
+                                            <img src="{% url 'statics' 'images/change.png' %}">
+                                        </div>
+                                        <div class="paragraphe"><div class="title">Modifier un évènement</div></div>
                                     </div>
                                 </a>
                             {% endif %}
