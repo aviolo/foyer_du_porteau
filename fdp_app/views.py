@@ -332,6 +332,9 @@ def activites_view(request):
     return render_to_response("fdp_app/activites_view.html", {}, context_instance=RequestContext(request))
 
 def pictures_view(request, year=''):
+    user = None
+    all_sections_authorization = None
+    all_events = None
     if year == '' : year = datetime.now().year
     all_events = list()
     if year != '0000' :
@@ -345,7 +348,16 @@ def pictures_view(request, year=''):
                 event.pictures = get_all_pictures_in_event(event)
                 all_events.append(event)
     years = list(set([event.date.year for event in models.Event.objects.filter(date__lte=datetime.now())]))
-    return render_to_response("fdp_app/pictures_view.html", {'all_events':all_events, 'years':years }, context_instance=RequestContext(request))
+    try:
+        user = request.user
+        the_user = models.User.objects.filter(username=user)[0]
+        section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+        all_sections_authorization = section_query.values('section__name', 'section__id', 'section__url')
+        #all_sections = section_query.values('section__name', 'section__id', 'section__url')
+    except IndexError,e:
+        on_error('Error in pictures view 1 : %s' %e)
+    content = { 'years': years, 'all_events' : all_events, 'autho_section' : all_sections_authorization}
+    return render_to_response("fdp_app/pictures_view.html", content, context_instance=RequestContext(request))
 
 def event_view(request, section_slug, event_slug):
     event = models.Event.objects.filter(id=event_slug)[0]

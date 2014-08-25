@@ -29,6 +29,18 @@
 					<div class="block">
                         <div class="title">{{ event.name }}</div>
                         <div class="subtitle"> Date : {{ event.date }}</div>
+                        {% for section in autho_section %}
+                            {{ event.section_id }} {{ section.section__id }}
+                            {% if section.section__id == event.section_id %}
+                                {{ all_sections.name }}
+                                <a href="{% url 'fdp_app-add_picture_view' section.section__url event.id %}">
+                                    <div class="light_block" style="width:20%; float:right; border: 2px dashed #f67521;">
+                                        <div class="left"><img src="{% url 'statics' 'images/add.png' %}"></div>
+                                        <div class="paragraphe"><div class="title">Ajouter des photos</div></div>
+                                    </div>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
                         <script type="text/javascript">
                             var viewer_{{event.id}} = new PhotoViewer();
                             {% for image in event.pictures %}
