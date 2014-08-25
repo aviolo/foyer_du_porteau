@@ -23,7 +23,7 @@
                             <div class="title_fixe">Menu</div>
                         </div>
                         <div>
-                            <form action="/ajouter_photo" method="post" enctype="multipart/form-data">
+                            <form action="ajouter_photo" method="post" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <table>
                                     {{ picture_form }}

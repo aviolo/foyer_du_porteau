@@ -41,10 +41,8 @@ class EventForm(ModelForm):
     class Meta:
         model = Event
         fields = ('name', 'content', 'date')
-        #fields = ('name', 'content', 'section', 'date')
 
 class PictureForm(Form):
-    event = ChoiceField()
     file = FileField(required=True)
 
 class modifyEventForm(EventForm):
@@ -158,10 +156,10 @@ def modify_event_view(request):
         '''
 
 def add_event_view(request, section_slug):
-    home_sections = None
     all_events = None
     event_form = None
     section_name = None
+    sections_infos = None
     try:
         sections_infos = get_section_infos(section_slug)
     except IndexError,e:
@@ -194,47 +192,57 @@ def add_event_view(request, section_slug):
     content = { 'event_form' : event_form,}
     return render_to_response("fdp_app/add_event_view.html", content, context_instance=csrfContext)
 
-def add_picture_view(request):
-    home_sections = None
+def add_picture_view(request, section_slug, event_slug):
+    sections_infos = None
     all_events = None
+    picture_form = None
+    event_infos = None
     try:
-        home_sections = get_section_infos('foyerduporteau')
-        all_events = get_next_thrid_event_in_section(home_sections['index'])
+        sections_infos = get_section_infos(section_slug)
     except IndexError,e:
         on_error('Error in add picture view 1 : %s' %e)
     user = request.user
     the_user = models.User.objects.filter(username=user)[0]
-    event_list = get_all_events()
-    event_list = models.Event.objects.all()
     if request.method == 'POST':
+        print "post request"
         picture_form = PictureForm(request.POST, request.FILES)
-        picture_form.fields['event'].choices = [(e.id, e.name) for e in event_list]
         if picture_form.is_valid():
-            event = None
             try:
-                event_id = -1
-                for val in picture_form.fields['event'].choices:
-                    if int(val[0]) == int(picture_form.cleaned_data['event']):
-                        event_id =  val[0]
-                        break
-                if event_id > 0:
-                    event = get_event_by_id(event_id)
-                    event.last_modification_date = datetime.now()
-                    event.save()
-                    year = str(event.date.year)
-                    section_name = get_section_name(event.section_id)
-                    section_name = defaultfilters.slugify(section_name)
-                    event_name = defaultfilters.slugify(event.name)
-                    save_files(request.FILES['file'], year, section_name, event_name, event_id, the_user.id)
+                event = get_event_by_id(event_slug)
+                event.last_modification_date = datetime.now()
+                event.save()
+                year = str(event.date.year)
+                section_name = get_section_name(event.section_id)
+                section_name = defaultfilters.slugify(section_name)
+                event_name = defaultfilters.slugify(event.name)
+                save_files(request.FILES['file'], year, section_name, event_name, event_slug, the_user.id)
             except IndexError,e:
                 on_error('Error in add picture view 2 : %s' %e)
-        content = {'home_sections' : home_sections, 'all_events' : all_events,}
-        return render_to_response("fdp_app/menu_view.html", content , context_instance=RequestContext(request))
+        section_contact = get_section_contact(sections_infos['index'])
+        all_events = get_all_event_in_section(sections_infos['index'])
+        section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+        all_sections_authorization = section_query.values('section__name', 'section__id')
+        content = { 'contents_sections' : sections_infos, 'section_contact' : section_contact, 'all_events' : all_events, 'autho_section' : all_sections_authorization}
+        '''
+        #request['path'] = '/balade/'
+        print "---------------------------"
+        print request
+        print "---------------------------"
+        print request.GET.get('next', '/')
+        print "---------------------------"
+        print dir(request.POST)
+        print request.POST
+        print request.POST.urlencode
+        print "---------------------------"
+        request.path_info = '/balade/'
+        request.path = '/balade/'
+        request.META['HTTP_REFERER'] = 'http://localhost:8080/balade/'
+        '''
+        return render_to_response("fdp_app/section_view.html", content , context_instance=RequestContext(request))
     else:
         picture_form = PictureForm(request.POST, request.FILES)
-        picture_form.fields['event'].choices = [(e.id, e.name) for e in event_list]
     csrfContext = RequestContext(request)
-    content = {'home_sections' : home_sections, 'all_events' : all_events, 'picture_form' : picture_form,}
+    content = {'home_sections' : sections_infos, 'all_events' : all_events, 'picture_form' : picture_form,}
     return render_to_response("fdp_app/add_picture_view.html", content, context_instance=csrfContext)
 
 def menu_view(request):
