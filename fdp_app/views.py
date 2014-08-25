@@ -15,6 +15,7 @@ import django.dispatch
 from django.forms import ModelForm, Textarea, ModelChoiceField, ChoiceField, DateTimeField, FileField, Form
 from django.forms.fields import DateField
 from django.forms.extras.widgets import SelectDateWidget
+from django.http import HttpResponseRedirect
 from django.template import defaultfilters, RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import render
@@ -201,7 +202,7 @@ def add_event_view(request, section_slug):
             section_contact = get_section_contact(sections_infos['index'])
             all_events = get_all_event_in_section(sections_infos['index'])
             content = { 'contents_sections' : sections_infos, 'section_contact' : section_contact, 'all_events' : all_events, }
-            return render_to_response("fdp_app/section_view.html", content, context_instance=RequestContext(request))
+            return HttpResponseRedirect('/%s' %(sections_infos['url']), content)
         else:
             on_error('le formulaire est mal rempli', will_send_mail=False)
     else:
@@ -256,7 +257,7 @@ def add_picture_view(request, section_slug, event_slug):
         request.path = '/balade/'
         request.META['HTTP_REFERER'] = 'http://localhost:8080/balade/'
         '''
-        return render_to_response("fdp_app/section_view.html", content , context_instance=RequestContext(request))
+        return HttpResponseRedirect('/%s' %(sections_infos['url']), content)
     else:
         picture_form = PictureForm(request.POST, request.FILES)
     csrfContext = RequestContext(request)
@@ -284,9 +285,12 @@ def logout_view(request):
     except IndexError,e:
         on_error('Error in logout view : %s' %e)
     content = {'home_sections' : home_sections, 'all_events' : all_events, 'username' : None, }
-    return render_to_response("fdp_app/home_view.html", content, context_instance=RequestContext(request))
+    return HttpResponseRedirect('/', content)
 
 def login_view(request):
+    # Si tu veux qu'à la fin de ta requête post l'url soit changée, 
+    # il faut que tu fasses : return HttpResponseRedirect('url') 
+    # au lieu de retourner un objet HttpResponse (donné par la fonction render en général).
     state = "Please log in below..."
     username = password = ''
     if request.POST:
@@ -308,7 +312,7 @@ def login_view(request):
                 except IndexError,e :
                     on_error('Error in login view : %s' %e)
                 content = {'home_sections' : home_sections, 'all_events' : all_events, 'username' : user, 'autho_section' : all_sections_authorization}
-                return render_to_response("fdp_app/home_view.html", content, context_instance=RequestContext(request))
+                return HttpResponseRedirect('/', content)
             else:
                 state = "Your account is not active, please contact the site admin."
         else:
