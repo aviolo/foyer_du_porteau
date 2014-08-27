@@ -52,8 +52,6 @@ class modifyEventForm(EventForm):
     class Meta:
         model = Event
         fields = ('name', 'content', 'date')
-    #event = ChoiceField()
-    #event_form = EventForm()
 
 #views
 def home_construction_view(request):
@@ -93,10 +91,17 @@ def modify_event_view(request, section_slug, event_slug):
     section_list_form = None
     modify_event_form = modifyEventForm()
     user = request.user
-    the_user = models.User.objects.filter(username=user)[0]
-    section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
-    all_sections = section_query.values('section__name', 'section__id')
-    modify_event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in all_sections]
+    try:
+        the_user = models.User.objects.filter(username=user)[0]
+        section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+        event = get_event_by_id(event_slug)
+        all_sections = section_query.values('section__name', 'section__id')
+        modify_event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in all_sections]
+        modify_event_form.fields['section'].initial = event.section_id
+        modify_event_form.fields['name'].initial = event.name
+        modify_event_form.fields['content'].initial = event.content
+    except IndexError,e:
+        on_error('Error in modify event view 1 : %s' %e)
     return render_to_response("fdp_app/modify_event_view.html", { 
             'home_sections' : home_sections,
             'all_events' : all_sections,
@@ -242,21 +247,6 @@ def add_picture_view(request, section_slug, event_slug):
         section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
         all_sections_authorization = section_query.values('section__name', 'section__id')
         content = { 'contents_sections' : sections_infos, 'section_contact' : section_contact, 'all_events' : all_events, 'autho_section' : all_sections_authorization}
-        '''
-        #request['path'] = '/balade/'
-        print "---------------------------"
-        print request
-        print "---------------------------"
-        print request.GET.get('next', '/')
-        print "---------------------------"
-        print dir(request.POST)
-        print request.POST
-        print request.POST.urlencode
-        print "---------------------------"
-        request.path_info = '/balade/'
-        request.path = '/balade/'
-        request.META['HTTP_REFERER'] = 'http://localhost:8080/balade/'
-        '''
         return HttpResponseRedirect('/%s' %(sections_infos['url']), content)
     else:
         picture_form = PictureForm(request.POST, request.FILES)
