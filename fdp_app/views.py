@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from fdp_app.models import Section
 from fdp_app.models import Event, Picture
-from upload_utils import save_files
+from upload_utils import save_files, move_picture_directory
 
 from django.conf import settings
 from django.contrib.admin import widgets
@@ -46,7 +46,7 @@ class EventForm(ModelForm):
 class PictureForm(Form):
     file = FileField(required=True)
 
-class modifyEventForm(EventForm):
+class modifyEventForm(ModelForm):
     file = FileField(required=False)
     section = ChoiceField()
     class Meta:
@@ -89,95 +89,81 @@ def modify_event_view(request, section_slug, event_slug):
     home_sections = None
     all_sections = None
     section_list_form = None
-    modify_event_form = modifyEventForm()
-    user = request.user
     try:
-        the_user = models.User.objects.filter(username=user)[0]
-        section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+        sections_infos = get_section_infos(section_slug)
         event = get_event_by_id(event_slug)
-        all_sections = section_query.values('section__name', 'section__id')
-        modify_event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in all_sections]
-        modify_event_form.fields['section'].initial = event.section_id
-        modify_event_form.fields['name'].initial = event.name
-        modify_event_form.fields['content'].initial = event.content
     except IndexError,e:
-        on_error('Error in modify event view 1 : %s' %e)
-    return render_to_response("fdp_app/modify_event_view.html", { 
-            'home_sections' : home_sections,
-            'all_events' : all_sections,
-            'select_section_form' : section_list_form,
-            'modify_event_form' : modify_event_form,
-            }, context_instance=RequestContext(request))
-    '''
-    modify_event_form = modifyEventForm()
+        on_error('Error in add event view 1 : %s' %e)
     user = request.user
     the_user = models.User.objects.filter(username=user)[0]
-    section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
-    all_sections = section_query.values('section__name', 'section__id')
-    modify_event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in all_sections]
-    return render_to_response("fdp_app/modify_event_view.html", { 
-            'home_sections' : home_sections,
-            'all_events' : all_sections,
-            'select_section_form' : section_list_form,
-            }, context_instance=RequestContext(request))
-    '''
-    '''
-    return render_to_response("fdp_app/modify_event_view.html", { 
-                'home_sections' : home_sections,
-                'modify_event_form' : modify_event_form,
-                }, context_instance=RequestContext(request))'''
-                
-    '''
-    print "--------------------- 1 ---------------------"
-    try:
-        user = request.user
-        the_user = models.User.objects.filter(username=user)[0]
-        section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
-        all_sections = section_query.values('section__name', 'section__id')
-        print "--------------------- 2 ---------------------"
-        if request.method == 'POST':
-            print request.POST
-            print "----------------------------------------------"
-
-            print "----------------  3 ----------------------"
-            print section_list_form
-            print "--------------------------------------"
-            #section_list_form = SelectSectionForm()
-            #section_list_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in all_sections]
-            event_form = EventForm()
-            event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in all_sections]
-            print "----------------------- 4 -----------------------"
-            print event_form
-            if event_form.is_valid():
-                print "----------------  5 ----------------------"
-                print "is valid"
-                #try:
-                     #section_list_form.save()
-                #except IndexError:
-                    #section = None
-                return render_to_response("fdp_app/modify_event_view.html", { 
-                'home_sections' : home_sections,
-                ' section_list_form' : section_list_form,
-                }, context_instance=RequestContext(request))
-            else:
-                csrfContext = RequestContext(request)
-                return render_to_response("fdp_app/modify_event_view.html", { 
-                'home_sections' : home_sections,
-                'all_events' : all_sections,
-                'select_section_form' : section_list_form,
-                }, context_instance=csrfContext)
+    if request.method == 'POST':
+        event_form = EventForm(request.POST, request.FILES, instance=Event(user_id=the_user.id, section_id=sections_infos['index']))
+        if event_form.is_valid():
+            try:
+                event_changed = Event.objects.get(pk=event.id)
+                old_data_event = event_changed
+                old_name = old_data_event.name
+                old_section = old_data_event.section_id
+                all_pictures_to_move = get_all_pictures_in_event(old_data_event)
+                event_form = EventForm(request.POST, instance=event_changed)
+                updated_form = event_form.save()
+                print event_changed.name, old_name
+                if event_changed.name != old_name:
+                    #event = get_event_by_id(event_slug)
+                    year = str(old_data_event.date.year)
+                    section_name = get_section_name(old_data_event.section_id)
+                    section_name = defaultfilters.slugify(section_name)
+                    event_name = defaultfilters.slugify(event.name)
+                    move_picture_directory(year, section_name, event_changed.name, old_name, all_pictures_to_move)
+                if request.FILES:
+                    event = get_event_by_name(request.POST["name"])
+                    year = str(event_changed.date.year)
+                    section_name = get_section_name(event_changed.section_id)
+                    section_name = defaultfilters.slugify(section_name)
+                    event_name = defaultfilters.slugify(event_changed.name)
+                    # mise a jour du repertoire contenant les photos
+                    print '------------------------------------------------------'
+                    print event_changed.name, old_name, event_changed.section_id, old_section
+                    print '------------------------------------------------------' 
+                    #save_files(request.FILES['file'], year, section_name, event_name, updated_form.pk, the_user.id)
+                    if event_changed.section_id == old_section:
+                        pass
+                        # TODO move pictures in new section
+            except IndexError, e:
+                on_error('Error in add event view 2 : %s' %e)
+            section_contact = get_section_contact(sections_infos['index'])
+            all_events = get_all_event_in_section(sections_infos['index'])
+            content = { 'contents_sections' : sections_infos, 'section_contact' : section_contact, 'all_events' : all_events, }
+            return HttpResponseRedirect('/%s' %(sections_infos['url']), content)
         else:
-            section_list_form = SelectSectionForm()
-            section_list_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in all_sections]
+            try:
+                modify_event_form = modifyEventForm()
+                section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+                all_sections = section_query.values('section__name', 'section__id')
+                modify_event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in all_sections]
+                modify_event_form.fields['section'].initial = event.section_id
+                modify_event_form.fields['name'].initial = event.name
+                modify_event_form.fields['content'].initial = event.content
+                modify_event_form.fields['date'].initial = event.date
+            except IndexError,e:
+                on_error('Error in modify event view 1 : %s' %e)
+            csrfContext = RequestContext(request)
+            on_error('les données sont incorrectes', will_send_mail=False)
+    else:
+        try:
+            modify_event_form = modifyEventForm()
+            section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+            all_sections = section_query.values('section__name', 'section__id')
+            modify_event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in all_sections]
+            modify_event_form.fields['section'].initial = event.section_id
+            modify_event_form.fields['name'].initial = event.name
+            modify_event_form.fields['content'].initial = event.content
+            modify_event_form.fields['date'].initial = event.date
+        except IndexError,e:
+            on_error('Error in modify event view 1 : %s' %e)
         csrfContext = RequestContext(request)
-        return render_to_response("fdp_app/modify_event_view.html", { 
-            'home_sections' : home_sections,
-            'all_events' : all_sections,
-            'select_section_form' : section_list_form,
-            }, context_instance=csrfContext)
-    except IndexError:
-        section = None
-        '''
+    content = {'home_sections' : home_sections, 'all_events' : all_sections, 'modify_event_form' : modify_event_form,}
+    return render_to_response("fdp_app/modify_event_view.html", content,  context_instance=csrfContext)
 
 def add_event_view(request, section_slug):
     all_events = None

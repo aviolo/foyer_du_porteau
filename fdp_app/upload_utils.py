@@ -134,6 +134,30 @@ def handle_uploaded_file(uploaded_file, upload_path):
 
     return True, 'File uploaded.'
 
+def move_picture_directory(year, section_name, name_event, old_name_event, all_pictures_to_move):
+    file_name = os.path.abspath( __file__ )
+    parent_dir = os.path.dirname(os.path.dirname(file_name))
+    old_media_dir = os.path.join(media_path, year, section_name, old_name_event)
+    old_min_dir = os.path.join(miniatures_dir, year, section_name, old_name_event)
+    abs_old_dir_pictures = os.path.join(parent_dir, old_media_dir)
+    abs_old_min_dir_pictures = os.path.join(parent_dir, old_min_dir)
+    new_media_dir = os.path.join(media_path, year, section_name, name_event)
+    new_min_dir = os.path.join(miniatures_dir, year, section_name, name_event)
+    abs_new_dir_pictures = os.path.join(parent_dir, new_media_dir)
+    abs_new_min_dir_pictures = os.path.join(parent_dir, new_min_dir)
+    cmd = 'mv \'%s\' \'%s\'' %(abs_old_dir_pictures, abs_new_dir_pictures)
+    os.system(cmd.encode('utf-8'))
+    cmd = 'mv \'%s\' %s' %(abs_old_min_dir_pictures, abs_new_min_dir_pictures)
+    os.system(cmd.encode('utf-8'))
+    for picture in all_pictures_to_move:
+        filename = str(picture.filename)
+        print filename
+        print old_name_event, name_event
+        filename = filename.replace(old_name_event, name_event)
+        print filename
+        picture.filename = filename
+        picture.save()
+
 if __name__ == "__main__":
     path = '/home/lavi/Documents/Randonnée du 05 Mars sur le Bois de Saint-Pierre.zip'
     event_id = 18
