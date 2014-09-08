@@ -30,7 +30,6 @@ def on_error(text, will_send_mail=True):
     if will_send_mail :
         send_mail('Error from foyerduporteau.net', text , 'lancereau.flavie@gmail.com', mails , fail_silently=False)
 
-
 def error500(request):
     response = render(request, "500.html")
     response.status_code = 500
@@ -47,8 +46,12 @@ class PictureForm(Form):
     file = FileField(required=True)
 
 class modifyEventForm(ModelForm):
-    file = FileField(required=False)
-    section = ChoiceField()
+    def __init__(self, all_sections, *args, **kwargs):
+        super(modifyEventForm, self).__init__(*args, **kwargs)
+        file = FileField(required=False)
+        print all_sections
+        self.fields['section'] = ChoiceField(choices=[(s['section__id'], s['section__name']) for s in all_sections])
+
     class Meta:
         model = Event
         fields = ('name', 'content', 'date')
@@ -89,27 +92,28 @@ def modify_event_view(request, section_slug, event_slug):
     home_sections = None
     all_sections = None
     section_list_form = None
+    event_changed = None
     try:
         sections_infos = get_section_infos(section_slug)
         event = get_event_by_id(event_slug)
+        event_changed = Event.objects.get(pk=event.id)
     except IndexError,e:
         on_error('Error in add event view 1 : %s' %e)
     user = request.user
     the_user = models.User.objects.filter(username=user)[0]
     if request.method == 'POST':
-        event_form = EventForm(request.POST, request.FILES, instance=Event(user_id=the_user.id, section_id=sections_infos['index']))
+        section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+        all_sections = section_query.values('section__name', 'section__id')
+        old_data_event = Event.objects.get(pk=event.id)
+        event_form = modifyEventForm(all_sections, request.POST, request.FILES, instance=event_changed)
         if event_form.is_valid():
+            new_section = request.POST['section']
             try:
-                event_changed = Event.objects.get(pk=event.id)
-                old_data_event = event_changed
                 old_name = old_data_event.name
                 old_section = old_data_event.section_id
                 all_pictures_to_move = get_all_pictures_in_event(old_data_event)
-                event_form = EventForm(request.POST, instance=event_changed)
                 updated_form = event_form.save()
-                print event_changed.name, old_name
                 if event_changed.name != old_name:
-                    #event = get_event_by_id(event_slug)
                     year = str(old_data_event.date.year)
                     section_name = get_section_name(old_data_event.section_id)
                     section_name = defaultfilters.slugify(section_name)
@@ -121,14 +125,12 @@ def modify_event_view(request, section_slug, event_slug):
                     section_name = get_section_name(event_changed.section_id)
                     section_name = defaultfilters.slugify(section_name)
                     event_name = defaultfilters.slugify(event_changed.name)
-                    # mise a jour du repertoire contenant les photos
-                    print '------------------------------------------------------'
-                    print event_changed.name, old_name, event_changed.section_id, old_section
-                    print '------------------------------------------------------' 
-                    #save_files(request.FILES['file'], year, section_name, event_name, updated_form.pk, the_user.id)
-                    if event_changed.section_id == old_section:
-                        pass
-                        # TODO move pictures in new section
+                    save_files(request.FILES['file'], year, section_name, event_name, updated_form.pk, the_user.id)
+                if new_section != old_section:
+                    event_changed.section_id = new_section
+                    event_changed.save()
+                    
+                    # TODO move pictures in new section
             except IndexError, e:
                 on_error('Error in add event view 2 : %s' %e)
             section_contact = get_section_contact(sections_infos['index'])
@@ -137,10 +139,9 @@ def modify_event_view(request, section_slug, event_slug):
             return HttpResponseRedirect('/%s' %(sections_infos['url']), content)
         else:
             try:
-                modify_event_form = modifyEventForm()
                 section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
                 all_sections = section_query.values('section__name', 'section__id')
-                modify_event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in all_sections]
+                modify_event_form = modifyEventForm(all_sections)
                 modify_event_form.fields['section'].initial = event.section_id
                 modify_event_form.fields['name'].initial = event.name
                 modify_event_form.fields['content'].initial = event.content
@@ -151,10 +152,9 @@ def modify_event_view(request, section_slug, event_slug):
             on_error('les données sont incorrectes', will_send_mail=False)
     else:
         try:
-            modify_event_form = modifyEventForm()
             section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
             all_sections = section_query.values('section__name', 'section__id')
-            modify_event_form.fields['section'].choices = [(s['section__id'], s['section__name']) for s in all_sections]
+            modify_event_form = modifyEventForm(all_sections)
             modify_event_form.fields['section'].initial = event.section_id
             modify_event_form.fields['name'].initial = event.name
             modify_event_form.fields['content'].initial = event.content
