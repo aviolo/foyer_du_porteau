@@ -88,6 +88,25 @@ def modify_profile_view(request):
     content = { 'home_sections' : home_sections, 'all_events' : all_events,}
     return render_to_response("fdp_app/modify_profile_view.html", content, context_instance=RequestContext(request))
 
+def modify_section_view(request, section_slug):
+    
+    all_events = None
+    contents_sections = None
+    section_contact = None
+    all_sections_authorization = None
+    try:
+        contents_sections = get_section_infos(section_slug)
+        section_contact = get_section_contact(contents_sections['index'])
+        all_events = get_all_event_in_section(contents_sections['index'])
+        user = request.user
+        the_user = models.User.objects.filter(username=user)[0]
+        section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+        all_sections_authorization = section_query.values('section__name', 'section__id')
+    except IndexError, e:
+        pass
+    content = { 'contents_sections' : contents_sections, 'section_contact' : section_contact, 'all_events' : all_events, 'autho_section' : all_sections_authorization}
+    return render_to_response("fdp_app/section_view.html", content, context_instance=RequestContext(request))
+
 def modify_event_view(request, section_slug, event_slug):
     home_sections = None
     all_sections = None
@@ -113,12 +132,14 @@ def modify_event_view(request, section_slug, event_slug):
                 old_section = old_data_event.section_id
                 all_pictures_to_move = get_all_pictures_in_event(old_data_event)
                 updated_form = event_form.save()
+                year = str(old_data_event.date.year)
+                print old_section, new_section
                 if event_changed.name != old_name:
-                    year = str(old_data_event.date.year)
                     section_name = get_section_name(old_data_event.section_id)
                     section_name = defaultfilters.slugify(section_name)
                     event_name = defaultfilters.slugify(event.name)
-                    move_picture_directory(year, section_name, event_changed.name, old_name, all_pictures_to_move)
+                    move_picture_directory(year, section_name, section_name, event_changed.name, old_name, all_pictures_to_move)
+                    old_name = event_changed.name
                 if request.FILES:
                     event = get_event_by_name(request.POST["name"])
                     year = str(event_changed.date.year)
@@ -127,10 +148,14 @@ def modify_event_view(request, section_slug, event_slug):
                     event_name = defaultfilters.slugify(event_changed.name)
                     save_files(request.FILES['file'], year, section_name, event_name, updated_form.pk, the_user.id)
                 if new_section != old_section:
+                    print "section changed!"
+                    print event_changed.name
                     event_changed.section_id = new_section
+                    new_section_name = defaultfilters.slugify(get_section_name(new_section))
+                    old_section_name = defaultfilters.slugify(get_section_name(old_section))
                     event_changed.save()
-                    
-                    # TODO move pictures in new section
+                    move_picture_directory(year, old_section_name, new_section_name, event_changed.name, old_name, all_pictures_to_move)
+                    # UPDATE BDD chemin image
             except IndexError, e:
                 on_error('Error in add event view 2 : %s' %e)
             section_contact = get_section_contact(sections_infos['index'])

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <link rel="stylesheet" href="{% url 'statics' 'stylesheets/header.css' %}" />
+        <link rel="stylesheet" href="{% url 'statics'  'stylesheets/style.css' %}" />
+        <link rel="stylesheet" href="{% url 'statics'  'stylesheets/font.css' %}" />
+        <link rel="stylesheet" href="{% url 'statics'  'stylesheets/blocks.css' %}" />
+        <link rel="stylesheet" href="{% url 'statics' 'stylesheets/footer.css' %}" />
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+        <title>Foyer du Porteau</title>
+        <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+        <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+        <script src="/statics/javascripts/jquery-ui-timepicker-addon.js"></script>
+        <script type="text/javascript">
+            $(function() {
+                $('#id_date').datetimepicker({ dateFormat: 'yy-mm-dd' });
+            });
+        </script>
+    </head>
+
+    <body>
+		{% include "fdp_app/header.html" %}
+        <div id="bloc_page">                       
+            <div id="inline">
+                {% include "fdp_app/left.html" %}
+            </div>
+            <div id="inline">
+                <div class="center">
+				    <div id="content">
+                        <div class="block">
+                            <div class="title_fixe">Menu</div>
+                        </div>
+                        <form action="modifier_evenement" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                                <table>
+                                    {{ modify_event_form }}
+                                </table>
+                            <input type="submit" value="Submit" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="inline">
+                {% include "fdp_app/right.html" %}
+            </div>           
+        </div>
+        {% include "fdp_app/footer.html" %}
+    </body>
+</html>
