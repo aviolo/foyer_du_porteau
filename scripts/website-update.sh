@@ -1,6 +1,6 @@
 #!/bin/bash
-PROJ_USER="website"
-PROJ_DIR="/home/$PROJ_USER/website"
+PROJ_USER="fdp"
+PROJ_DIR="/home/$PROJ_USER/fdp"
 
 # get command to run
 CMD="pull"
