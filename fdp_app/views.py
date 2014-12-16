@@ -103,61 +103,42 @@ def modify_profile_view(request):
 
 
 def modify_section_view(request, section_slug):
-    all_sections_authorization = None
     try:
-        section = get_section_by_name(section_slug)
-        section_changed = Section.objects.get(pk=section['index'])
+        sections_infos = get_section_infos(section_slug)
     except IndexError, e:
-        on_error('Error in add event view 1 : %s' % e)
-    user = request.user
-    the_user = models.User.objects.filter(username=user)[0]
+        on_error('Erreur lors de la récupération des données de sections : %s' % e)
     if request.method == 'POST':
-        section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
-        all_sections_authorization = section_query.values('section__picture', 'section__content', 'section__schedule')[0]
-        old_section_data = Section.objects.get(pk=section.id)
-        section_form = modifySectionForm(all_sections_authorization, request.POST, request.FILES, instance=section_changed)
+        section_form = modifySectionForm(request.POST, request.FILES, instance=Section('section__picture', 'section__content', 'section__schedule'))
         if section_form.is_valid():
             try:
                 pass
             except IndexError, e:
-                on_error('Error in add event view 2 : %s' % e)
-            # section_contact = get_section_contact(sections_infos['index'])
-            # all_events = get_all_event_in_section(sections_infos['index'])
-            # content = {'contents_sections': sections_infos, 'section_contact': section_contact, 'all_events': all_events, }
-            return HttpResponseRedirect('/%s' % (old_section_data['name']))
+                on_error('Erreur lors de la modification des données de sections : %s' % e)
+            section_contact = get_section_contact(sections_infos['index'])
+            all_events = get_all_event_in_section(sections_infos['index'])
+            content = {'contents_sections': sections_infos, 'section_contact': section_contact, 'all_events': all_events, }
+            return HttpResponseRedirect('/%s' % (sections_infos['url']), content)
         else:
-            try:
-                section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
-                all_sections_authorization = section_query.values('section__picture', 'section__content', 'section__schedule')[0]
-                modify_section_form = modifySectionForm()
-                modify_section_form.fields['picture'].initial = section['picture']
-                modify_section_form.fields['content'].initial = section['content']
-                modify_section_form.fields['schedule'].initial = section['schedule']
-            except IndexError, e:
-                on_error('Error in modify section view 1 : %s' % e)
+            on_error('les données saisit dans le changement de section sont incorrectées', will_send_mail=False)
+            content = modify_section_form(sections_infos)
             csrfContext = RequestContext(request)
-            on_error('les données sont incorrectes', will_send_mail=False)
+            return render_to_response("fdp_app/modify_section_view.html", content, context_instance=csrfContext)
     else:
-        try:
-            section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
-
-            # all_sections_authorization = section_query.values('section__content', 'section__schedule')[0]
-            # print all_sections_authorization
-            # all_sections = section_query.values('section__name', 'section__id')
-            # print all_sections
-            modify_section_form = modifySectionForm()
-            print section['picture']
-            modify_section_form.fields['picture'].initial = section['picture']
-            modify_section_form.fields['content'].initial = section['content']
-            modify_section_form.fields['schedule'].initial = section['schedule']
-            print "-------------------------------------------------------------------"
-            print modify_section_form.fields['picture'].initial.url
-            print "-------------------------------------------------------------------"
-        except IndexError, e:
-            on_error('Error in modify section view 1 : %s' % e)
-    csrfContext = RequestContext(request)
-    content = {'modify_section_form': modify_section_form}
+        content = modify_section_form(sections_infos)
+        csrfContext = RequestContext(request)
     return render_to_response("fdp_app/modify_section_view.html", content, context_instance=csrfContext)
+
+
+def modify_section_form(section_infos):
+    try:
+        modify_section_form = modifySectionForm()
+        modify_section_form.fields['picture'].initial = section_infos['picture']
+        modify_section_form.fields['content'].initial = section_infos['content']
+        modify_section_form.fields['schedule'].initial = section_infos['schedule']
+    except IndexError, e:
+        on_error('Erreur lors du chargement du formulaire de section : %s' % e)
+    content = {'modify_section_form': modify_section_form}
+    return content
 
 
 def modify_event_view(request, section_slug, event_slug):
