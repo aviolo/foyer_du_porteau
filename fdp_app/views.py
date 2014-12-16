@@ -58,9 +58,11 @@ class modifyEventForm(ModelForm):
 
 
 class modifySectionForm(ModelForm):
+    file = FileField(required=False)
+
     class Meta:
         model = Section
-        fields = ('picture', 'content', 'schedule')
+        fields = ('content', 'schedule', 'picture')
 
 
 # views
@@ -122,16 +124,15 @@ def modify_section_view(request, section_slug):
             # section_contact = get_section_contact(sections_infos['index'])
             # all_events = get_all_event_in_section(sections_infos['index'])
             # content = {'contents_sections': sections_infos, 'section_contact': section_contact, 'all_events': all_events, }
-            print old_section_data
             return HttpResponseRedirect('/%s' % (old_section_data['name']))
         else:
             try:
                 section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
                 all_sections_authorization = section_query.values('section__picture', 'section__content', 'section__schedule')[0]
                 modify_section_form = modifySectionForm()
-                # modify_section_form.fields['picture'].initial = all_sections_authorization['section__picture']
-                modify_section_form.fields['content'].initial = all_sections_authorization['section__content']
-                modify_section_form.fields['schedule'].initial = all_sections_authorization['section__schedule']
+                modify_section_form.fields['picture'].initial = section['picture']
+                modify_section_form.fields['content'].initial = section['content']
+                modify_section_form.fields['schedule'].initial = section['schedule']
             except IndexError, e:
                 on_error('Error in modify section view 1 : %s' % e)
             csrfContext = RequestContext(request)
@@ -145,10 +146,13 @@ def modify_section_view(request, section_slug):
             # all_sections = section_query.values('section__name', 'section__id')
             # print all_sections
             modify_section_form = modifySectionForm()
-            print section
+            print section['picture']
             modify_section_form.fields['picture'].initial = section['picture']
             modify_section_form.fields['content'].initial = section['content']
             modify_section_form.fields['schedule'].initial = section['schedule']
+            print "-------------------------------------------------------------------"
+            print modify_section_form.fields['picture'].initial.url
+            print "-------------------------------------------------------------------"
         except IndexError, e:
             on_error('Error in modify section view 1 : %s' % e)
     csrfContext = RequestContext(request)

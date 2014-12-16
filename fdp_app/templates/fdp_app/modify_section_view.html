@@ -34,7 +34,15 @@
                         <form action="modifier_section" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                                 <table>
-                                    {{ modify_section_form }}
+                                    {% for field in modify_section_form %}
+                                        {% if field.name == "picture" %}
+                                            {{ field.label }} :
+                                             <img src="{{ field.value.url }}" />
+                                        {% else %}
+                                            {{ field.label_tag }}{{ field }}
+                                        {% endif %}
+                                        </br>
+                                    {% endfor %}
                                 </table>
                             <input type="submit" value="Submit" />
                         </form>
