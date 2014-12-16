@@ -28,13 +28,13 @@
             <div id="inline">
                 <div class="center">
 				    <div id="content">
-                        <div class="block">
+                       <div class="block">
                             <div class="title_fixe">Menu</div>
                         </div>
-                        <form action="modifier_evenement" method="post" enctype="multipart/form-data">
+                        <form action="modifier_section" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                                 <table>
-                                    {{ modify_event_form }}
+                                    {{ modify_section_form }}
                                 </table>
                             <input type="submit" value="Submit" />
                         </form>
