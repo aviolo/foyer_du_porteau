@@ -29,16 +29,20 @@
                                 Horaires : {{ contents_sections.schedule }}
                                 {{ contents_sections.id }}
                             </div>
-                            <div class="transparent_block" style="width:20%; float:right; border: 2px dashed #f67521;">
-                                <div class="light_block">
-                                    <div class="left" style="width:10%;">
-                                        <img src="{% url 'statics' 'images/change.png' %}">
+                            {% for section in autho_section %}
+                                {% if section.section__name == contents_sections.name %}
+                                    <div class="transparent_block" style="width:20%; float:right; border: 2px dashed #f67521;">
+                                        <div class="light_block">
+                                            <div class="left" style="width:10%;">
+                                                <img src="{% url 'statics' 'images/change.png' %}">
+                                            </div>
+                                            <div class="paragraphe">
+                                                <a href="{% url 'fdp_app-modify_section_view' contents_sections.url %}">Modifier la section</a>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="paragraphe">
-                                        <a href="{% url 'fdp_app-modify_section_view' contents_sections.url %}">Modifier la section</a>
-                                    </div>
-                                </div>
-                            </div>
+                                {% endif %}
+                            {% endfor %}
 						<div class="left">
 		                    {% if contents_sections.picture %}
 		                        <img src="{% url 'medias' contents_sections.picture %}" >
