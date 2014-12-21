@@ -29,18 +29,31 @@
                         <div class="title">Ajouter un évènement</div>
                         <form action="ajouter_evenement" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
+                                <table><tbody>
                                 {% for field in  event_form %}
+                                    <tr>
                                     {% if field.name != 'section' %}
-                                        <div class="fieldWrapper">
                                             {% if field.label == 'Name' %}
-                                                Nom de l'évènement : {{ field }} {{ field.errors }}
+                                                <th>Nom de l'évènement : </th> <td>{{ field }}</td>
+                                                <td style="color:red;">{{ field.errors }}</td> 
+                                            {% elif field.label == 'Contents' %}
+                                                <th>Description de l'évènement :</th> <td>{{ field }}</td>
+                                                <td style="color:red;">{{ field.errors }}</td>
+                                            {% elif field.label == 'Date published' %}
+                                                <th>Date : </th> <td>{{ field }}</td>
+                                                <td style="color:red;">{{ field.errors }}</td>  
+                                            {% elif field.label == 'File' %}
+                                                <th>Image(s) :</th> <td>{{ field }}</td>
+                                                <td style="color:red;">{{ field.errors }}</td> 
                                             {% else %}
-                                                {{ field.label_tag }} {{ field }} {{ field.errors }}
+                                                <th>{{ field.label_tag }}</th> <td>{{ field }}</td>
+                                                <td style="color:red;">{{ field.errors }}</td> 
                                             {% endif %}
-                                        </div>
                                     {% endif %}
+                                    </tr>
                                 {% endfor %}
-                            <input type="submit" value="Submit" />
+                                </tbody></table>
+                            <input type="submit" value="Valider" />
                         </form>
                     </div>
                 </div>

@@ -30,14 +30,33 @@
 				    <div id="content">
                         <div class="block">
                             <div class="title_fixe">Menu</div>
-                        </div>
-                        <form action="modifier_evenement" method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                                <table>
-                                    {{ modify_event_form }}
-                                </table>
-                            <input type="submit" value="Submit" />
-                        </form>
+                            <form action="modifier_evenement" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                    <table><tbody>
+                                    {% for field in  modify_event_form %}
+                                        <tr>
+                                            {% if field.label == 'Name' %}
+                                                <th>Nom de l'évènement : </th> <td>{{ field }}</td>
+                                                <td style="color:red;">{{ field.errors }}</td> 
+                                            {% elif field.label == 'Contents' %}
+                                                <th>Description de l'évènement :</th> <td>{{ field }}</td>
+                                                <td style="color:red;">{{ field.errors }}</td>
+                                            {% elif field.label == 'Date published' %}
+                                                <th>Date : </th> <td>{{ field }}</td>
+                                                <td style="color:red;">{{ field.errors }}</td>  
+                                            {% elif field.label == 'File' %}
+                                                <th>Image(s) :</th> <td>{{ field }}</td>
+                                                <td style="color:red;">{{ field.errors }}</td> 
+                                            {% else %}
+                                                <th>{{ field.label_tag }}</th> <td>{{ field }}</td>
+                                                <td style="color:red;">{{ field.errors }}</td> 
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody></table>
+                                <input type="submit" value="Submit" />
+                            </form>
+                         </div>
                     </div>
                 </div>
             </div>
