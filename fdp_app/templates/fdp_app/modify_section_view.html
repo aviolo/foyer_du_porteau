@@ -20,47 +20,40 @@
     </head>
 
     <body>
-		{% include "fdp_app/header.html" %}
-        <div id="bloc_page">                       
-            <div id="inline">
-                {% include "fdp_app/left.html" %}
-            </div>
-            <div id="inline">
-                <div class="center">
-				    <div id="content">
-                       <div class="block">
-                            <div class="title">Modifier la section: </div>
-                            <form action="modifier_section" method="post" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                    <table><tbody>
-                                    {% for field in  modify_section_form %}
-                                        <tr>
-                                            {% if field.label == 'Contents' %}
-                                                <th>Description :</th> <td>{{ field }}</td>
-                                                <td style="color:red;">{{ field.errors }}</td>
-                                            {% elif field.label == 'Schedule' %}
-                                                <th>Horaires : </th> <td>{{ field }}</td>
-                                                <td style="color:red;">{{ field.errors }}</td>  
-                                            {% elif field.label == 'Picture' %}
-                                                <th>Image :</th> <td><img src="{{ field.value.url }}" /></td><td>{{ field }}</td>
-                                                <td style="color:red;">{{ field.errors }}</td> 
-                                            {% else %}
-                                                <th>{{ field.label_tag }}</th> <td>{{ field }}</td>
-                                                <td style="color:red;">{{ field.errors }}</td> 
-                                            {% endif %}
-                                        </tr>
-                                    {% endfor %}
-                                    </tbody></table>
-                                <input type="submit" value="Submit" />
-                            </form>
-                         </div>
+		{% include "fdp_app/header.html" %}                  
+            <div id="bloc_page">                       
+            {% include "fdp_app/left.html" %}
+            {% include "fdp_app/right.html" %}
+            <div class="center">
+                <div id="content">
+                    <div class="block">
+                        <div class="title">Modifier la section: </div>
+                        <form action="modifier_section" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                                <table><tbody>
+                                {% for field in  modify_section_form %}
+                                    <tr>
+                                        {% if field.label == 'Contents' %}
+                                            <th>Description :</th> <td>{{ field }}</td>
+                                            <td style="color:red;">{{ field.errors }}</td>
+                                        {% elif field.label == 'Schedule' %}
+                                            <th>Horaires : </th> <td>{{ field }}</td>
+                                            <td style="color:red;">{{ field.errors }}</td>  
+                                        {% elif field.label == 'Picture' %}
+                                            <th>Image :</th> <td><img src="{{ field.value.url }}" /></td><td><input id="id_picture" type="file" name="picture"></td>
+                                            <td style="color:red;">{{ field.errors }}</td> 
+                                        {% else %}
+                                            <th>{{ field.label_tag }}</th> <td>{{ field }}</td>
+                                            <td style="color:red;">{{ field.errors }}</td> 
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                                </tbody></table>
+                            <input type="submit" value="Valider" />
+                        </form>
                     </div>
                 </div>
-            </div>
-
-            <div id="inline">
-                {% include "fdp_app/right.html" %}
-            </div>           
+            </div>     
         </div>
         {% include "fdp_app/footer.html" %}
     </body>
