@@ -142,9 +142,9 @@ def add_img_to_db(image_file_path, year, section_name, event_name, event_id=None
     new_path = os.path.join(abs_dir_pictures, filename)
     miniature_path = os.path.join(abs_min_dir_pictures, filename)
     logger.info('cp %s %s' % (new_path.encode('utf8'), miniature_path.encode('utf8')))
-    os.system('cp %s %s' % (new_path, miniature_path))
+    os.system('cp %s %s' % (new_path.encode('utf8'), miniature_path.encode('utf8')))
     logger.info('mogrify -resize 250 %s' % miniature_path.encode('utf8'))
-    os.system('mogrify -resize 250 %s' % miniature_path)
+    os.system('mogrify -resize 250 %s' % miniature_path.encode('utf8'))
     # save to database
     path_bdd = os.path.join(year, section_name, event_name, filename)
     new_picture = Picture(title=filename, filename='user_pictures/%s' % path_bdd, user=User.objects.filter(id=user_id)[0], event=Event.objects.filter(id=event_id)[0])
