@@ -207,10 +207,8 @@ def modify_event_view(request, section_slug, event_slug):
                     save_files(request.FILES['file'], year, section_name, event_name, updated_form.pk, the_user.id)
                 if new_section != old_section:
                     logger.info("section changed")
-                    #logger.info("%s" % event_changed.name.encode('utf8'))
-                    logger.info('toto1')
+                    logger.info("%s" % event_changed.name.encode('utf8'))
                     event_name = defaultfilters.slugify(event_changed.name)
-                    logger.info('toto2')
                     event_changed.section_id = new_section
                     new_section_name = defaultfilters.slugify(get_section_name(new_section))
                     old_section_name = defaultfilters.slugify(get_section_name(old_section))

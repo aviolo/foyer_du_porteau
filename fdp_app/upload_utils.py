@@ -34,7 +34,7 @@ def get_image_size(image_path):
 
 
 def resize_image(image_path):
-    os.system('mogrify -resize 1280 %s' % image_path)
+    os.system('mogrify -resize 1280 %s' % image_path.encode('utf-8'))
 
 
 def check_and_resize_image(image_path):
@@ -114,7 +114,7 @@ def save_files(uploaded_file, year, section_name, event_name, event_id, user_id)
                 image_type = imghdr.what(tmp_file_path)
                 if image_type:
                     add_img_to_db(tmp_file_path, year, section_name, event_name, event_id, user_id)
-            os.system('rm -rf %s' % dezip_path)
+            os.system('rm -rf %s' % dezip_path.encode('utf-8'))
         else:
             pass
     else:
