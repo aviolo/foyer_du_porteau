@@ -210,7 +210,7 @@ def modify_event_view(request, section_slug, event_slug):
                     #logger.info("%s" % event_changed.name.encode('utf8'))
                     logger.info('toto1')
                     event_name = defaultfilters.slugify(event_changed.name)
-                    logger.ingo('toto2')
+                    logger.info('toto2')
                     event_changed.section_id = new_section
                     new_section_name = defaultfilters.slugify(get_section_name(new_section))
                     old_section_name = defaultfilters.slugify(get_section_name(old_section))
