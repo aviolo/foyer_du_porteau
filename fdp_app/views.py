@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import models
 from datetime import datetime
@@ -112,7 +113,7 @@ def modify_section_view(request, section_slug):
         sections_infos = get_section_infos(section_slug)
         section_changed = Section.objects.get(pk=sections_infos['index'])
     except IndexError, e:
-        on_error('Erreur lors de la récupération des données de sections : %s' % e)
+        on_error('Erreur lors de la recuperation des donnees de sections : %s' % e)
     if request.method == 'POST':
         section_form = modifySectionForm(request.POST, request.FILES, instance=section_changed)
         if section_form.is_valid():
@@ -128,13 +129,13 @@ def modify_section_view(request, section_slug):
                     else:
                         raise 'File uploaded is not an image'
             except Exception, e:
-                on_error('Erreur lors de la modification des données de sections : %s' % e)
+                on_error('Erreur lors de la modification des donnees de sections : %s' % e)
             section_contact = get_section_contact(sections_infos['index'])
             all_events = get_all_event_in_section(sections_infos['index'])
             content = {'contents_sections': sections_infos, 'section_contact': section_contact, 'all_events': all_events, }
             return HttpResponseRedirect('/%s' % (sections_infos['url']), content)
         else:
-            on_error('les données saisit dans le changement de section sont incorrectées', will_send_mail=False)
+            on_error('les donnees saisit dans le changement de section sont incorrectes', will_send_mail=False)
             content = modify_section_form(sections_infos)
             csrfContext = RequestContext(request)
             return render_to_response("fdp_app/modify_section_view.html", content, context_instance=csrfContext)
@@ -190,7 +191,7 @@ def modify_event_view(request, section_slug, event_slug):
                 logger.info("old_section : %s, new_section : %s" % (old_section, new_section))
                 logger.info("evenement a changer de section")
                 if event_changed.name != old_name:
-                    logger.info("changer le nom de l'event")
+                    logger.info("changer le nom de l event")
                     section_name = get_section_name(old_data_event.section_id)
                     section_name = defaultfilters.slugify(section_name)
                     event_name = defaultfilters.slugify(event_changed.name)
