@@ -16,7 +16,7 @@ from django.shortcuts import render_to_response
 from django.shortcuts import render
 
 import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('fdp_app')
 
 # handle errors
 
@@ -189,7 +189,6 @@ def modify_event_view(request, section_slug, event_slug):
                 updated_form = event_form.save()
                 year = str(old_data_event.date.year)
                 logger.info("old_section : %s, new_section : %s" % (old_section, new_section))
-                logger.info("evenement a changer de section")
                 if event_changed.name != old_name:
                     logger.info("changer le nom de l event")
                     section_name = get_section_name(old_data_event.section_id)
@@ -205,7 +204,7 @@ def modify_event_view(request, section_slug, event_slug):
                     section_name = defaultfilters.slugify(section_name)
                     event_name = defaultfilters.slugify(event_changed.name)
                     save_files(request.FILES['file'], year, section_name, event_name, updated_form.pk, the_user.id)
-                if new_section != old_section:
+                if int(new_section) != int(old_section):
                     logger.info("section changed")
                     logger.info("%s" % event_changed.name.encode('utf8'))
                     event_name = defaultfilters.slugify(event_changed.name)

@@ -11,7 +11,7 @@ import commands
 # Waring: deprecated !
 
 import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('fdp_app')
 
 IMAGES_EXTENSIONS = ('.png', '.gif', '.jpg', '.bmp', '.jpeg')
 

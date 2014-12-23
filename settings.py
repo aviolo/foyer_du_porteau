@@ -152,12 +152,12 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'stream': 'ext://sys.stdout',
         },
         'mail_admins': {
-            'level': 'ERROR',
+            'level': 'INFO',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         }
@@ -165,14 +165,18 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'ERROR',
+            'level': 'INFO',
             'propagate': True,
         },
         'django.request': {
             'handlers': ['mail_admins'],
-            'level': 'ERROR',
+            'level': 'INFO',
             'propagate': True,
         },
+        'fdp_app': {
+            'handlers': ['console', 'mail_admins'],
+            'level': 'INFO',
+        }
     }
 }
 
