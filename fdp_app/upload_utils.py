@@ -177,6 +177,11 @@ def move_picture_directory(year, old_section_name, new_section_name, name_event,
     file_name = os.path.abspath(__file__)
     parent_dir = os.path.dirname(os.path.dirname(file_name))
     old_media_dir = os.path.join(media_path, year, old_section_name, old_name_event)
+    try:
+        os.stat(old_media_dir)
+    except:
+        old_name_event = defaultfilters.slugify(old_name_event)
+        old_media_dir = os.path.join(media_path, year, old_section_name, old_name_event)
     old_min_dir = os.path.join(miniatures_dir, year, old_section_name, old_name_event)
     abs_old_dir_pictures = os.path.join(parent_dir, old_media_dir)
     abs_old_min_dir_pictures = os.path.join(parent_dir, old_min_dir)
@@ -194,14 +199,9 @@ def move_picture_directory(year, old_section_name, new_section_name, name_event,
     os.system(cmd.encode('utf-8'))
     for picture in all_pictures_to_move:
         filename = str(picture.filename)
-        print filename
-        print old_name_event, name_event
-        filename = filename.replace(old_name_event, name_event)
-        print filename
-        print old_section_name, new_section_name
-        filename = filename.replace(old_section_name, new_section_name)
-        print filename
-        picture.filename = filename
+        img_file = os.path.basename(filename)
+        new_filename = os.path.join(os.path.basename(media_path), year, new_section_name, name_event, img_file)
+        picture.filename = new_filename
         picture.save()
 
 if __name__ == "__main__":

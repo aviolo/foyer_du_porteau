@@ -182,7 +182,7 @@ def modify_event_view(request, section_slug, event_slug):
         if event_form.is_valid():
             new_section = request.POST['section']
             try:
-                old_name = defaultfilters.slugify(old_data_event.name)
+                old_name = old_data_event.name
                 old_section = old_data_event.section_id
                 all_pictures_to_move = get_all_pictures_in_event(old_data_event)
                 updated_form = event_form.save()
@@ -190,12 +190,14 @@ def modify_event_view(request, section_slug, event_slug):
                 print old_section, new_section
                 print "evenement a changer de section"
                 if event_changed.name != old_name:
+                    print "changer le nom de l'event"
                     section_name = get_section_name(old_data_event.section_id)
                     section_name = defaultfilters.slugify(section_name)
-                    event_name = defaultfilters.slugify(event.name)
-                    move_picture_directory(year, section_name, section_name, event_changed.name, old_name, all_pictures_to_move)
+                    event_name = defaultfilters.slugify(event_changed.name)
+                    move_picture_directory(year, section_name, section_name, event_name, old_name, all_pictures_to_move)
                     old_name = defaultfilters.slugify(event_changed.name)
                 if request.FILES:
+                    print "Ajout de photos"
                     event = get_event_by_name(request.POST["name"])
                     year = str(event_changed.date.year)
                     section_name = get_section_name(event_changed.section_id)
