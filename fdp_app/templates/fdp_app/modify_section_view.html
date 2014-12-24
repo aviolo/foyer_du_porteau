@@ -30,7 +30,7 @@
 				    <div id="content">
                        <div class="block">
                             <div class="title">Modifier la section: </div>
-                            <form action="modifier_evenement" method="post" enctype="multipart/form-data">
+                            <form action="modifier_section" method="post" enctype="multipart/form-data">
                                 {% csrf_token %}
                                     <table><tbody>
                                     {% for field in  modify_section_form %}

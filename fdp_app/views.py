@@ -3,7 +3,7 @@ import models
 from datetime import datetime
 from fdp_app.models import Section
 from fdp_app.models import Event
-from upload_utils import save_files, move_picture_directory
+from upload_utils import save_files, move_picture_directory, check_type_file
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -58,8 +58,6 @@ class modifyEventForm(ModelForm):
 
 
 class modifySectionForm(ModelForm):
-    file = FileField(required=False)
-
     class Meta:
         model = Section
         fields = ('content', 'schedule', 'picture')
@@ -105,20 +103,36 @@ def modify_profile_view(request):
 def modify_section_view(request, section_slug):
     try:
         sections_infos = get_section_infos(section_slug)
+        print sections_infos
+        section_changed = Section.objects.get(pk=sections_infos['index'])
     except IndexError, e:
         on_error('Erreur lors de la récupération des données de sections : %s' % e)
     if request.method == 'POST':
-        section_form = modifySectionForm(request.POST, request.FILES, instance=Section('section__picture', 'section__content', 'section__schedule'))
+        section_form = modifySectionForm(request.POST, request.FILES, instance=section_changed)
         if section_form.is_valid():
             try:
-                pass
-            except IndexError, e:
+                section_changed.content = request.POST['content']
+                section_changed.schedule = request.POST['schedule']
+                section_changed.save()
+                if request.FILES:
+                    result = check_type_file(section_changed.picture)
+                    print result
+                    if result:
+                        print "totototootototootototot"
+                        section_changed.picture = result
+                        print section_changed.picture
+                        section_changed.save()
+                        print "sauvegarde ok"
+                    else:
+                        raise 'File uploaded is not an image'
+            except Exception, e:
                 on_error('Erreur lors de la modification des données de sections : %s' % e)
             section_contact = get_section_contact(sections_infos['index'])
             all_events = get_all_event_in_section(sections_infos['index'])
             content = {'contents_sections': sections_infos, 'section_contact': section_contact, 'all_events': all_events, }
             return HttpResponseRedirect('/%s' % (sections_infos['url']), content)
         else:
+            print "je suis ici"
             on_error('les données saisit dans le changement de section sont incorrectées', will_send_mail=False)
             content = modify_section_form(sections_infos)
             csrfContext = RequestContext(request)
@@ -126,12 +140,15 @@ def modify_section_view(request, section_slug):
     else:
         content = modify_section_form(sections_infos)
         csrfContext = RequestContext(request)
+        print content
     return render_to_response("fdp_app/modify_section_view.html", content, context_instance=csrfContext)
 
 
 def modify_section_form(section_infos):
     try:
         modify_section_form = modifySectionForm()
+        print "///////////////////////////////////////////"
+        print type(section_infos['picture'])
         modify_section_form.fields['picture'].initial = section_infos['picture']
         modify_section_form.fields['content'].initial = section_infos['content']
         modify_section_form.fields['schedule'].initial = section_infos['schedule']
