@@ -110,7 +110,6 @@ def modify_profile_view(request):
 def modify_section_view(request, section_slug):
     try:
         sections_infos = get_section_infos(section_slug)
-        print sections_infos
         section_changed = Section.objects.get(pk=sections_infos['index'])
     except IndexError, e:
         on_error('Erreur lors de la récupération des données de sections : %s' % e)
@@ -123,13 +122,9 @@ def modify_section_view(request, section_slug):
                 section_changed.save()
                 if request.FILES:
                     result = check_type_file(section_changed.picture)
-                    print result
                     if result:
-                        print "totototootototootototot"
                         section_changed.picture = result
-                        print section_changed.picture
                         section_changed.save()
-                        print "sauvegarde ok"
                     else:
                         raise 'File uploaded is not an image'
             except Exception, e:
@@ -139,7 +134,6 @@ def modify_section_view(request, section_slug):
             content = {'contents_sections': sections_infos, 'section_contact': section_contact, 'all_events': all_events, }
             return HttpResponseRedirect('/%s' % (sections_infos['url']), content)
         else:
-            print "je suis ici"
             on_error('les données saisit dans le changement de section sont incorrectées', will_send_mail=False)
             content = modify_section_form(sections_infos)
             csrfContext = RequestContext(request)
@@ -147,7 +141,6 @@ def modify_section_view(request, section_slug):
     else:
         content = modify_section_form(sections_infos)
         csrfContext = RequestContext(request)
-        print content
     return render_to_response("fdp_app/modify_section_view.html", content, context_instance=csrfContext)
 
 
@@ -189,18 +182,19 @@ def modify_event_view(request, section_slug, event_slug):
         if event_form.is_valid():
             new_section = request.POST['section']
             try:
-                old_name = old_data_event.name
+                old_name = defaultfilters.slugify(old_data_event.name)
                 old_section = old_data_event.section_id
                 all_pictures_to_move = get_all_pictures_in_event(old_data_event)
                 updated_form = event_form.save()
                 year = str(old_data_event.date.year)
                 print old_section, new_section
+                print "evenement a changer de section"
                 if event_changed.name != old_name:
                     section_name = get_section_name(old_data_event.section_id)
                     section_name = defaultfilters.slugify(section_name)
                     event_name = defaultfilters.slugify(event.name)
                     move_picture_directory(year, section_name, section_name, event_changed.name, old_name, all_pictures_to_move)
-                    old_name = event_changed.name
+                    old_name = defaultfilters.slugify(event_changed.name)
                 if request.FILES:
                     event = get_event_by_name(request.POST["name"])
                     year = str(event_changed.date.year)
@@ -211,11 +205,12 @@ def modify_event_view(request, section_slug, event_slug):
                 if new_section != old_section:
                     print "section changed!"
                     print event_changed.name
+                    event_name = defaultfilters.slugify(event_changed.name)
                     event_changed.section_id = new_section
                     new_section_name = defaultfilters.slugify(get_section_name(new_section))
                     old_section_name = defaultfilters.slugify(get_section_name(old_section))
                     event_changed.save()
-                    move_picture_directory(year, old_section_name, new_section_name, event_changed.name, old_name, all_pictures_to_move)
+                    move_picture_directory(year, old_section_name, new_section_name, event_name, old_name, all_pictures_to_move)
                     # UPDATE BDD chemin image
             except IndexError, e:
                 on_error('Error in add event view 2 : %s' % e)
@@ -314,7 +309,6 @@ def add_picture_view(request, section_slug, event_slug):
     user = request.user
     the_user = models.User.objects.filter(username=user)[0]
     if request.method == 'POST':
-        print "post request"
         picture_form = PictureForm(request.POST, request.FILES)
         if picture_form.is_valid():
             try:
