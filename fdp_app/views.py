@@ -132,6 +132,8 @@ def modify_section_view(request, section_slug):
                 on_error('Erreur lors de la modification des donnees de sections : %s' % e)
             section_contact = get_section_contact(sections_infos['index'])
             all_events = get_all_event_in_section(sections_infos['index'])
+            if 'foyerduporteau' in sections_infos['url']:
+                return HttpResponseRedirect('/')
             content = {'contents_sections': sections_infos, 'section_contact': section_contact, 'all_events': all_events, }
             return HttpResponseRedirect('/%s' % (sections_infos['url']), content)
         else:
@@ -218,6 +220,8 @@ def modify_event_view(request, section_slug, event_slug):
                 on_error('Error in add event view 2 : %s' % e)
             section_contact = get_section_contact(sections_infos['index'])
             all_events = get_all_event_in_section(sections_infos['index'])
+            if 'foyerduporteau' in sections_infos['url']:
+                return HttpResponseRedirect('/')
             content = {'contents_sections': sections_infos, 'section_contact': section_contact, 'all_events': all_events, }
             return HttpResponseRedirect('/%s' % (sections_infos['url']), content)
         else:
@@ -289,6 +293,8 @@ def add_event_view(request, section_slug):
                 on_error('Error in add event view 2 : %s' % e)
             section_contact = get_section_contact(sections_infos['index'])
             all_events = get_all_event_in_section(sections_infos['index'])
+            if 'foyerduporteau' in sections_infos['url']:
+                return HttpResponseRedirect('/')
             content = {'contents_sections': sections_infos, 'section_contact': section_contact, 'all_events': all_events, }
             return HttpResponseRedirect('/%s' % (sections_infos['url']), content)
         else:
@@ -334,6 +340,8 @@ def add_picture_view(request, section_slug, event_slug):
         else:
             section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
             all_sections_authorization = section_query.values('section__name', 'section__id')
+        if 'foyerduporteau' in sections_infos['url']:
+            return HttpResponseRedirect('/')
         content = {'contents_sections': sections_infos, 'section_contact': section_contact, 'all_events': all_events, 'autho_section': all_sections_authorization}
         return HttpResponseRedirect('/%s' % (sections_infos['url']), content)
     else:
