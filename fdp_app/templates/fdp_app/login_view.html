@@ -12,32 +12,25 @@
     <body>
 		{% include "fdp_app/header.html" %}
         <div id="bloc_page">                       
-            <div id="inline">
-                {% include "fdp_app/left.html" %}
-            </div>
-            <div id="inline">
-                <div class="center">
-				    <div id="content">
-                        <div class="block">
-                            <div class="title_fixe">Connection au site</div>
-                            <form action="/login/" method="post">
-                                {% csrf_token %}
-        		                    utilisateur : <input type="text" name="username" value="" /><br />
-        		                    mot de passe : <input type="password" name="password" value="" /><br />
-        		                    <input type="submit" value="Log In" />
-	                        </form>
-                            {% if username %}
-                              {{ username }}<br />
-                            {% endif %}
-                            {{ state }}<br />
-                            </div> 
-                    </div>
+            {% include "fdp_app/left.html" %}
+            {% include "fdp_app/right.html" %}
+            <div class="center">
+			    <div id="content">
+                    <div class="block">
+                        <div class="title_fixe">Connection au site</div>
+                        <form action="/login/" method="post">
+                            {% csrf_token %}
+    		                    utilisateur : <input type="text" name="username" value="" /><br />
+    		                    mot de passe : <input type="password" name="password" value="" /><br />
+    		                    <input type="submit" value="Log In" />
+                        </form>
+                        {% if username %}
+                          {{ username }}<br />
+                        {% endif %}
+                        {{ state }}<br />
+                        </div> 
                 </div>
             </div>
-            
-            <div id="inline">
-                {% include "fdp_app/right.html" %}
-            </div>           
         </div>
         {% include "fdp_app/footer.html" %}
     </body>
