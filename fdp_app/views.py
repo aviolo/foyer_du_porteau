@@ -90,7 +90,7 @@ def home_view(request):
             all_sections_authorization = section_query.values('section__name', 'section__id')
     except IndexError:
         pass
-    print all_sections_authorization
+    logger.info(all_sections_authorization)
     content = {'home_sections': home_sections, 'all_events': all_events, 'autho_section': all_sections_authorization}
     return render_to_response("fdp_app/home_view.html", content, context_instance=RequestContext(request))
 
@@ -187,17 +187,17 @@ def modify_event_view(request, section_slug, event_slug):
                 all_pictures_to_move = get_all_pictures_in_event(old_data_event)
                 updated_form = event_form.save()
                 year = str(old_data_event.date.year)
-                print old_section, new_section
-                print "evenement a changer de section"
+                logger.info("old_section : %s, new_section : %s" % (old_section, new_section))
+                logger.info("evenement a changer de section")
                 if event_changed.name != old_name:
-                    print "changer le nom de l'event"
+                    logger.info("changer le nom de l'event")
                     section_name = get_section_name(old_data_event.section_id)
                     section_name = defaultfilters.slugify(section_name)
                     event_name = defaultfilters.slugify(event_changed.name)
                     move_picture_directory(year, section_name, section_name, event_name, old_name, all_pictures_to_move)
                     old_name = defaultfilters.slugify(event_changed.name)
                 if request.FILES:
-                    print "Ajout de photos"
+                    logger.info("Ajout de photos")
                     event = get_event_by_name(request.POST["name"])
                     year = str(event_changed.date.year)
                     section_name = get_section_name(event_changed.section_id)
@@ -205,8 +205,8 @@ def modify_event_view(request, section_slug, event_slug):
                     event_name = defaultfilters.slugify(event_changed.name)
                     save_files(request.FILES['file'], year, section_name, event_name, updated_form.pk, the_user.id)
                 if new_section != old_section:
-                    print "section changed!"
-                    print event_changed.name
+                    logger.info("section changed!")
+                    logger.info(event_changed.name)
                     event_name = defaultfilters.slugify(event_changed.name)
                     event_changed.section_id = new_section
                     new_section_name = defaultfilters.slugify(get_section_name(new_section))
@@ -242,7 +242,7 @@ def modify_event_view(request, section_slug, event_slug):
     else:
         try:
             all_sections_right = models.UserSection.objects.filter(user_id=the_user.id, right__id=3).count()
-            print all_sections_right
+            logger.info(all_sections_right)
             if all_sections_right >= 1:
                 all_sections = list()
                 for section in models.Section.objects.all():

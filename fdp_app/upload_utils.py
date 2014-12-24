@@ -9,6 +9,9 @@ import os
 import commands
 # Waring: deprecated !
 
+import logging
+logger = logging.getLogger(__name__)
+
 IMAGES_EXTENSIONS = ('.png', '.gif', '.jpg', '.bmp', '.jpeg')
 
 dezip_path = '/tmp/ufiles'
@@ -45,7 +48,7 @@ def check_and_resize_image(image_path):
 
 def check_type_file(uploaded_file):
     image_type = imghdr.what(uploaded_file.path)
-    print image_type
+    logger.info(image_type)
     if image_type:
         filename, extension_file = os.path.splitext(os.path.basename(uploaded_file.name))
         new_filename = defaultfilters.slugify(filename)
@@ -58,13 +61,13 @@ def check_type_file(uploaded_file):
         try:
             os.system(cmd.encode('utf-8'))
         except Exception:
-            print "error when move file"
+            logger.info("error when move file")
             return None
         bdd_img_path = os.path.join(os.path.basename(media_path), filename)
-        print '3-', bdd_img_path
+        logger.info(bdd_img_path)
         return bdd_img_path
     else:
-        print "file uploaded is not an image"
+        logger.info("file uploaded is not an image")
         return None
 
 # gérer les 7zip, rar, tar.gz...
@@ -185,17 +188,17 @@ def move_picture_directory(year, old_section_name, new_section_name, name_event,
     old_min_dir = os.path.join(miniatures_dir, year, old_section_name, old_name_event)
     abs_old_dir_pictures = os.path.join(parent_dir, old_media_dir)
     abs_old_min_dir_pictures = os.path.join(parent_dir, old_min_dir)
-    print abs_old_dir_pictures, abs_old_min_dir_pictures
+    logger.info("abs_old_dir : %s, abs_old_min_dir : %s" % (abs_old_dir_pictures, abs_old_min_dir_pictures))
     new_media_dir = os.path.join(media_path, year, new_section_name, name_event)
     new_min_dir = os.path.join(miniatures_dir, year, new_section_name, name_event)
     abs_new_dir_pictures = os.path.join(parent_dir, new_media_dir)
     abs_new_min_dir_pictures = os.path.join(parent_dir, new_min_dir)
-    print abs_new_dir_pictures, abs_new_min_dir_pictures
+    logger.info("abs_new_dir : %s, abs_new_min_dir : %s" % (abs_new_dir_pictures, abs_new_min_dir_pictures))
     cmd = 'mv \'%s\' \'%s\'' % (abs_old_dir_pictures, abs_new_dir_pictures)
-    print "move pictures"
+    logger.info("move pictures")
     os.system(cmd.encode('utf-8'))
     cmd = 'mv \'%s\' %s' % (abs_old_min_dir_pictures, abs_new_min_dir_pictures)
-    print "move min pictures"
+    logger.info("move min pictures")
     os.system(cmd.encode('utf-8'))
     for picture in all_pictures_to_move:
         filename = str(picture.filename)
