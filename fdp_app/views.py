@@ -25,7 +25,7 @@ def on_error(text, will_send_mail=True):
     logger.error(text)
     mails = [admin[1] for admin in settings.ADMINS]
     if will_send_mail:
-        send_mail('Error from foyerduporteau.net', text, 'lancereau.flavie@gmail.com', mails, fail_silently=False)
+        send_mail('Error from foyerduporteau.net', text, 'foyerduporteau@gmail.com', mails, fail_silently=False)
 
 
 def error500(request):
