@@ -448,8 +448,11 @@ def infos_view(request, section_slug):
     all_events = None
     contents_sections = None
     try:
+        logger.info("%s" % section_slug)
         contents_sections = get_section_infos(section_slug)
+        logger.info("%s" % contents_sections['index'])
         all_events = get_all_event_in_section(contents_sections['index'])
+        logger.info(all_events)
     except IndexError, e:
         on_error('Error in infos %s view : %s' % (section_slug, e))
     content = {'contents_sections': contents_sections, 'all_events': all_events}
