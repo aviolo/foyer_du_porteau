@@ -509,6 +509,7 @@ def event_view(request, section_slug, event_slug):
 
 
 def get_section_infos(section):
+    logger.info(models.Section.objects.filter(url=section))
     section = models.Section.objects.filter(url=section)[0]
     logger.info("in get section infos : %s" % section)
     contents_sections = dict(index=section.id, name=section.name, content=section.content, picture=section.picture, schedule=section.schedule, url=section.url)
