@@ -481,16 +481,16 @@ def pictures_view(request, year=''):
     years = list(set([event.date.year for event in models.Event.objects.filter(date__lte=datetime.now())]))
     try:
         user = request.user
-        the_user = models.User.objects.filter(username=user)[0]
-        all_sections_right = models.UserSection.objects.filter(user_id=the_user.id, right__id=3).count()
-        if all_sections_right >= 1:
-            all_sections_authorization = list()
-            for section in models.Section.objects.all():
-                all_sections_authorization.append({'section__id': section.id, 'section__name': section.name, 'section__url': section.url})
-        else:
-            section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
-            all_sections_authorization = section_query.values('section__name', 'section__id', 'section__url')
-        # all_sections = section_query.values('section__name', 'section__id', 'section__url')
+        if user.is_active:
+            the_user = models.User.objects.filter(username=user)[0]
+            all_sections_right = models.UserSection.objects.filter(user_id=the_user.id, right__id=3).count()
+            if all_sections_right >= 1:
+                all_sections_authorization = list()
+                for section in models.Section.objects.all():
+                    all_sections_authorization.append({'section__id': section.id, 'section__name': section.name, 'section__url': section.url})
+            else:
+                section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+                all_sections_authorization = section_query.values('section__name', 'section__id', 'section__url')
     except IndexError, e:
         on_error('Error in pictures view 1 : %s' % e)
     content = {'years': years, 'all_events': all_events, 'autho_section': all_sections_authorization}
