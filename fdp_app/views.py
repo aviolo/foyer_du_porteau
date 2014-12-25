@@ -80,19 +80,18 @@ def home_view(request):
         home_sections = get_section_infos('foyerduporteau')
         all_events = get_next_thrid_event_in_section(home_sections['index'])
         user = request.user
-        if user.is_active:
-            the_user = models.User.objects.filter(username=user)[0]
-            all_sections_right = models.UserSection.objects.filter(user_id=the_user.id, right__id=3).count()
-            if all_sections_right >= 1:
-                all_sections_authorization = list()
-                for section in models.Section.objects.all():
-                    all_sections_authorization.append({'section__id': section.id, 'section__name': section.name})
-            else:
-                section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
-                all_sections_authorization = section_query.values('section__name', 'section__id')
-            logger.info("authorization section : %s" % all_sections_authorization)
+        the_user = models.User.objects.filter(username=user)[0]
+        all_sections_right = models.UserSection.objects.filter(user_id=the_user.id, right__id=3).count()
+        if all_sections_right >= 1:
+            all_sections_authorization = list()
+            for section in models.Section.objects.all():
+                all_sections_authorization.append({'section__id': section.id, 'section__name': section.name})
+        else:
+            section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+            all_sections_authorization = section_query.values('section__name', 'section__id')
     except IndexError:
         pass
+    logger.info(all_sections_authorization)
     content = {'home_sections': home_sections, 'all_events': all_events, 'autho_section': all_sections_authorization}
     return render_to_response("fdp_app/home_view.html", content, context_instance=RequestContext(request))
 
@@ -247,7 +246,7 @@ def modify_event_view(request, section_slug, event_slug):
     else:
         try:
             all_sections_right = models.UserSection.objects.filter(user_id=the_user.id, right__id=3).count()
-            logger.info("authorization section : %s" % all_sections_right)
+            logger.info(all_sections_right)
             if all_sections_right >= 1:
                 all_sections = list()
                 for section in models.Section.objects.all():
@@ -396,16 +395,15 @@ def login_view(request):
                     home_sections = get_section_infos('foyerduporteau')
                     all_events = get_next_thrid_event_in_section(home_sections['index'])
                     user = request.user
-                    if user.is_active:
-                        the_user = models.User.objects.filter(username=user)[0]
-                        all_sections_right = models.UserSection.objects.filter(user_id=the_user.id, right__id=3).count()
-                        if all_sections_right >= 1:
-                            all_sections_authorization = list()
-                            for section in models.Section.objects.all():
-                                all_sections_authorization.append({'section__id': section.id, 'section__name': section.name})
-                        else:
-                            section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
-                            all_sections_authorization = section_query.values('section__name', 'section__id')
+                    the_user = models.User.objects.filter(username=user)[0]
+                    all_sections_right = models.UserSection.objects.filter(user_id=the_user.id, right__id=3).count()
+                    if all_sections_right >= 1:
+                        all_sections_authorization = list()
+                        for section in models.Section.objects.all():
+                            all_sections_authorization.append({'section__id': section.id, 'section__name': section.name})
+                    else:
+                        section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+                        all_sections_authorization = section_query.values('section__name', 'section__id')
                 except IndexError, e:
                     on_error('Error in login view : %s' % e)
                 content = {'home_sections': home_sections, 'all_events': all_events, 'username': user, 'autho_section': all_sections_authorization}
@@ -428,16 +426,15 @@ def section_view(request, section_slug):
         section_contact = get_section_contact(contents_sections['index'])
         all_events = get_all_event_in_section(contents_sections['index'])
         user = request.user
-        if user.is_active:
-            the_user = models.User.objects.filter(username=user)[0]
-            all_sections_right = models.UserSection.objects.filter(user_id=the_user.id, right__id=3).count()
-            if all_sections_right >= 1:
-                all_sections_authorization = list()
-                for section in models.Section.objects.all():
-                    all_sections_authorization.append({'section__id': section.id, 'section__name': section.name})
-            else:
-                section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
-                all_sections_authorization = section_query.values('section__name', 'section__id')
+        the_user = models.User.objects.filter(username=user)[0]
+        all_sections_right = models.UserSection.objects.filter(user_id=the_user.id, right__id=3).count()
+        if all_sections_right >= 1:
+            all_sections_authorization = list()
+            for section in models.Section.objects.all():
+                all_sections_authorization.append({'section__id': section.id, 'section__name': section.name})
+        else:
+            section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+            all_sections_authorization = section_query.values('section__name', 'section__id')
     except IndexError:
         pass
     content = {'contents_sections': contents_sections, 'section_contact': section_contact, 'all_events': all_events, 'autho_section': all_sections_authorization}
@@ -481,16 +478,16 @@ def pictures_view(request, year=''):
     years = list(set([event.date.year for event in models.Event.objects.filter(date__lte=datetime.now())]))
     try:
         user = request.user
-        if user.is_active:
-            the_user = models.User.objects.filter(username=user)[0]
-            all_sections_right = models.UserSection.objects.filter(user_id=the_user.id, right__id=3).count()
-            if all_sections_right >= 1:
-                all_sections_authorization = list()
-                for section in models.Section.objects.all():
-                    all_sections_authorization.append({'section__id': section.id, 'section__name': section.name, 'section__url': section.url})
-            else:
-                section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
-                all_sections_authorization = section_query.values('section__name', 'section__id', 'section__url')
+        the_user = models.User.objects.filter(username=user)[0]
+        all_sections_right = models.UserSection.objects.filter(user_id=the_user.id, right__id=3).count()
+        if all_sections_right >= 1:
+            all_sections_authorization = list()
+            for section in models.Section.objects.all():
+                all_sections_authorization.append({'section__id': section.id, 'section__name': section.name, 'section__url': section.url})
+        else:
+            section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
+            all_sections_authorization = section_query.values('section__name', 'section__id', 'section__url')
+        # all_sections = section_query.values('section__name', 'section__id', 'section__url')
     except IndexError, e:
         on_error('Error in pictures view 1 : %s' % e)
     content = {'years': years, 'all_events': all_events, 'autho_section': all_sections_authorization}
