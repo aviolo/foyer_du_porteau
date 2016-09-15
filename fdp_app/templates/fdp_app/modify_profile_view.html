@@ -1,39 +1,16 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <link rel="stylesheet" href="{% url 'statics' 'stylesheets/header.css' %}" />
-        <link rel="stylesheet" href="{% url 'statics'  'stylesheets/style.css' %}" />
-        <link rel="stylesheet" href="{% url 'statics'  'stylesheets/font.css' %}" />
-        <link rel="stylesheet" href="{% url 'statics'  'stylesheets/blocks.css' %}" />
-        <link rel="stylesheet" href="{% url 'statics' 'stylesheets/footer.css' %}" />
-        <title>Foyer du Porteau</title>
-        <script type="text/javascript" src="http://slideshow.triptracker.net/slide.js"></script>
-    </head>
+{% extends "fdp_app/base.html" %}{% load i18n %}{% load staticfiles %}
 
-    <body>
-		{% include "fdp_app/header.html" %}
-        <div id="bloc_page">                       
-            <div id="inline">
-                {% include "fdp_app/left.html" %}
-            </div>
-            <div id="inline">
-                <div class="center">
-				    <div id="content">
-                        <div class="block">
-                            <div class="title_fixe">Menu</div>
-                        </div>
-                        <div>
-                            modifier son profile
-                        </div>
-                    </div>
+{% block title %}{% trans "Modifier votre profile" %}{% endblock %}
+
+{% block body %}
+    <div id="inline">
+        <div class="center">
+            <div id="content">
+                <div class="block">
+                    <div class="title_fixe">Menu</div>
                 </div>
+                <div>modifier votre profile</div>
             </div>
-
-            <div id="inline">
-                {% include "fdp_app/right.html" %}
-            </div>           
         </div>
-        {% include "fdp_app/footer.html" %}
-    </body>
-</html>
+    </div>
+{% endblock %}

@@ -16,8 +16,8 @@ logger = logging.getLogger('fdp_app')
 IMAGES_EXTENSIONS = ('.png', '.gif', '.jpg', '.bmp', '.jpeg')
 
 dezip_path = '/tmp/ufiles'
-media_path = 'medias/user_pictures'
-miniatures_dir = 'medias/miniatures/user_pictures'
+media_path = 'media/user_pictures'
+miniatures_dir = 'media/miniatures/user_pictures'
 
 
 def get_image_size(image_path):

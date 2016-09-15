@@ -1,28 +1,15 @@
-<!DOCTYPE html>
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <link rel="stylesheet" href="{% url 'medias' 'statics/stylesheets/header.css' %}" />
-        <link rel="stylesheet" href="{% url 'medias'  'statics/stylesheets/style.css' %}" />
-        <link rel="stylesheet" href="{% url 'medias'  'statics/stylesheets/font.css' %}" />
-        <link rel="stylesheet" href="{% url 'medias'  'statics/stylesheets/blocks.css' %}" />
-        <link rel="stylesheet" href="{% url 'medias' 'statics/stylesheets/footer.css' %}" />
-        <title>Foyer du Porteau</title>
-        <script type="text/javascript" src="http://slideshow.triptracker.net/slide.js"></script>
-    </head>
+{% extends "fdp_app/base.html" %}{% load i18n %}{% load staticfiles %}
 
-    <body>
-		{% include "fdp_app/header.html" %}
-        <div id="bloc_page">                       
-            <div class="center">
-                <div class="block">
-                    <div class="title">Erreur</div>
-                Page non Trouvée.<br> 
-                Le lien que vous avez suivit ou l'adresse saisie ne correspond pas à une page.
-                </div>
+{% block title %}{% trans "Page non Trouvée" %}{% endblock %}
+
+{% block body %}
+    <div id="bloc_page">                       
+        <div class="center">
+            <div class="block">
+                <div class="title">Erreur</div>
+            Page non Trouvée.<br> 
+            Le lien que vous avez suivit ou l'adresse saisie ne correspond pas à une page.
             </div>
         </div>
-        {% include "fdp_app/footer.html" %}
-    </body>
-</html>
+    </div>
+{% endblock %}

@@ -1,26 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from . import models
 from datetime import datetime
-from fdp_app.models import Section
-from fdp_app.models import Event
-from .upload_utils import save_files, move_picture_directory, check_type_file
+import logging
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
-from django.forms import ModelForm, ChoiceField, FileField, Form
 from django.http import HttpResponseRedirect
-from django.template import defaultfilters, RequestContext
-from django.shortcuts import render_to_response
 from django.shortcuts import render
+from django.template import defaultfilters, RequestContext
 
-import logging
-logger = logging.getLogger('fdp_app')
+from fdp_app import forms
+from fdp_app import models
+from fdp_app.upload_utils import save_files, move_picture_directory, check_type_file
+
+logger = logging.getLogger('fdp_app.views')
+
 
 # handle errors
-
-
 def on_error(text, will_send_mail=True):
     logger.error(text)
     mails = [admin[1] for admin in settings.ADMINS]
@@ -28,47 +25,8 @@ def on_error(text, will_send_mail=True):
         send_mail('Error from foyerduporteau.net', text, 'foyerduporteau@gmail.com', mails, fail_silently=False)
 
 
-def error500(request):
-    response = render(request, "500.html")
-    response.status_code = 500
-    return response
-
-# Forms
-
-
-class EventForm(ModelForm):
-    file = FileField(required=False)
-
-    class Meta:
-        model = Event
-        fields = ('name', 'content', 'date')
-
-
-class PictureForm(Form):
-    file = FileField(required=True)
-
-
-class modifyEventForm(ModelForm):
-    def __init__(self, all_sections, *args, **kwargs):
-        super(modifyEventForm, self).__init__(*args, **kwargs)
-        self.fields['section'] = ChoiceField(choices=[(s['section__id'], s['section__name']) for s in all_sections])
-
-    class Meta:
-        model = Event
-        fields = ('name', 'content', 'date')
-
-
-class modifySectionForm(ModelForm):
-    class Meta:
-        model = Section
-        fields = ('content', 'schedule', 'picture')
-
-
-# views
-
-
 def home_construction_view(request):
-    return render_to_response("fdp_app/home_construction_view.html", context_instance=RequestContext(request))
+    return render(request, "fdp_app/home_construction_view.html")
 
 
 def home_view(request):
@@ -94,7 +52,7 @@ def home_view(request):
     except IndexError:
         pass
     content = {'home_sections': home_sections, 'all_events': all_events, 'autho_section': all_sections_authorization}
-    return render_to_response("fdp_app/home_view.html", content, context_instance=RequestContext(request))
+    return render(request, "fdp_app/home_view.html", content)
 
 
 def modify_profile_view(request):
@@ -106,17 +64,17 @@ def modify_profile_view(request):
     except IndexError as e:
         on_error('Error in modify profile view : %s' % e)
     content = {'home_sections': home_sections, 'all_events': all_events}
-    return render_to_response("fdp_app/modify_profile_view.html", content, context_instance=RequestContext(request))
+    return render(request, "fdp_app/modify_profile_view.html", content)
 
 
 def modify_section_view(request, section_slug):
     try:
         sections_infos = get_section_infos(section_slug)
-        section_changed = Section.objects.get(pk=sections_infos['index'])
+        section_changed = models.Section.objects.get(pk=sections_infos['index'])
     except IndexError as e:
         on_error('Erreur lors de la recuperation des donnees de sections : %s' % e)
     if request.method == 'POST':
-        section_form = modifySectionForm(request.POST, request.FILES, instance=section_changed)
+        section_form = forms.ModifySectionForm(request.POST, request.FILES, instance=section_changed)
         if section_form.is_valid():
             try:
                 section_changed.content = request.POST['content']
@@ -141,16 +99,16 @@ def modify_section_view(request, section_slug):
             on_error('les donnees saisit dans le changement de section sont incorrectes', will_send_mail=False)
             content = modify_section_form(sections_infos)
             csrfContext = RequestContext(request)
-            return render_to_response("fdp_app/modify_section_view.html", content, context_instance=csrfContext)
+            return render(request, "fdp_app/modify_section_view.html", content, context_instance=csrfContext)
     else:
         content = modify_section_form(sections_infos)
         csrfContext = RequestContext(request)
-    return render_to_response("fdp_app/modify_section_view.html", content, context_instance=csrfContext)
+    return render(request, "fdp_app/modify_section_view.html", content, context_instance=csrfContext)
 
 
 def modify_section_form(section_infos):
     try:
-        modify_section_form = modifySectionForm()
+        modify_section_form = forms.ModifySectionForm()
         modify_section_form.fields['picture'].initial = section_infos['picture']
         modify_section_form.fields['content'].initial = section_infos['content']
         modify_section_form.fields['schedule'].initial = section_infos['schedule']
@@ -167,7 +125,7 @@ def modify_event_view(request, section_slug, event_slug):
     try:
         sections_infos = get_section_infos(section_slug)
         event = get_event_by_id(event_slug)
-        event_changed = Event.objects.get(pk=event.id)
+        event_changed = models.Event.objects.get(pk=event.id)
     except IndexError as e:
         on_error('Error in add event view 1 : %s' % e)
     user = request.user
@@ -181,8 +139,8 @@ def modify_event_view(request, section_slug, event_slug):
         else:
             section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
             all_sections = section_query.values('section__name', 'section__id')
-        old_data_event = Event.objects.get(pk=event.id)
-        event_form = modifyEventForm(all_sections, request.POST, request.FILES, instance=event_changed)
+        old_data_event = models.Event.objects.get(pk=event.id)
+        event_form = forms.ModifyEventForm(all_sections, request.POST, request.FILES, instance=event_changed)
         if event_form.is_valid():
             new_section = request.POST['section']
             try:
@@ -235,7 +193,7 @@ def modify_event_view(request, section_slug, event_slug):
                 else:
                     section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
                     all_sections = section_query.values('section__name', 'section__id')
-                modify_event_form = modifyEventForm(all_sections)
+                modify_event_form = forms.ModifyEventForm(all_sections)
                 modify_event_form.fields['section'].initial = event.section_id
                 modify_event_form.fields['name'].initial = event.name
                 modify_event_form.fields['content'].initial = event.content
@@ -255,7 +213,7 @@ def modify_event_view(request, section_slug, event_slug):
             else:
                 section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
                 all_sections = section_query.values('section__name', 'section__id')
-            modify_event_form = modifyEventForm(all_sections)
+            modify_event_form = forms.ModifyEventForm(all_sections)
             modify_event_form.fields['section'].initial = event.section_id
             modify_event_form.fields['name'].initial = event.name
             modify_event_form.fields['content'].initial = event.content
@@ -264,7 +222,7 @@ def modify_event_view(request, section_slug, event_slug):
             on_error('Error in modify event view 1 : %s' % e)
         csrfContext = RequestContext(request)
     content = {'home_sections': home_sections, 'all_events': all_sections, 'modify_event_form': modify_event_form}
-    return render_to_response("fdp_app/modify_event_view.html", content, context_instance=csrfContext)
+    return render(request, "fdp_app/modify_event_view.html", content, context_instance=csrfContext)
 
 
 def add_event_view(request, section_slug):
@@ -279,7 +237,7 @@ def add_event_view(request, section_slug):
     user = request.user
     the_user = models.User.objects.filter(username=user)[0]
     if request.method == 'POST':
-        event_form = EventForm(request.POST, request.FILES, instance=Event(user_id=the_user.id, section_id=sections_infos['index']))
+        event_form = forms.EventForm(request.POST, request.FILES, instance=models.Event(user_id=the_user.id, section_id=sections_infos['index']))
         if event_form.is_valid():
             try:
                 new_event = event_form.save()
@@ -301,10 +259,10 @@ def add_event_view(request, section_slug):
         else:
             on_error('le formulaire est mal rempli', will_send_mail=False)
     else:
-        event_form = EventForm(request.POST, request.FILES, instance=Event(user_id=the_user.id))
+        event_form = forms.EventForm(request.POST, request.FILES, instance=models.Event(user_id=the_user.id))
     csrfContext = RequestContext(request)
     content = {'event_form': event_form}
-    return render_to_response("fdp_app/add_event_view.html", content, context_instance=csrfContext)
+    return render(request, "fdp_app/add_event_view.html", content, context_instance=csrfContext)
 
 
 def add_picture_view(request, section_slug, event_slug):
@@ -318,7 +276,7 @@ def add_picture_view(request, section_slug, event_slug):
     user = request.user
     the_user = models.User.objects.filter(username=user)[0]
     if request.method == 'POST':
-        picture_form = PictureForm(request.POST, request.FILES)
+        picture_form = forms.PictureForm(request.POST, request.FILES)
         if picture_form.is_valid():
             try:
                 event = get_event_by_id(event_slug)
@@ -346,10 +304,10 @@ def add_picture_view(request, section_slug, event_slug):
         content = {'contents_sections': sections_infos, 'section_contact': section_contact, 'all_events': all_events, 'autho_section': all_sections_authorization}
         return HttpResponseRedirect('/%s' % (sections_infos['url']), content)
     else:
-        picture_form = PictureForm(request.POST, request.FILES)
+        picture_form = forms.PictureForm(request.POST, request.FILES)
     csrfContext = RequestContext(request)
     content = {'home_sections': sections_infos, 'all_events': all_events, 'picture_form': picture_form}
-    return render_to_response("fdp_app/add_picture_view.html", content, context_instance=csrfContext)
+    return render(request, "fdp_app/add_picture_view.html", content, context_instance=csrfContext)
 
 
 def menu_view(request):
@@ -361,7 +319,7 @@ def menu_view(request):
     except IndexError as e:
         on_error('Error in menu view : %s' % e)
     content = {'home_sections': home_sections, 'all_events': all_events}
-    return render_to_response("fdp_app/menu_view.html", content, context_instance=RequestContext(request))
+    return render(request, "fdp_app/menu_view.html", content)
 
 
 def logout_view(request):
@@ -415,7 +373,7 @@ def login_view(request):
         else:
             state = "Your username and/or password were incorrect."
     content = {'state': state}
-    return render_to_response('fdp_app/login_view.html', content, context_instance=RequestContext(request))
+    return render(request, 'fdp_app/login_view.html', content)
 
 
 def section_view(request, section_slug):
@@ -441,7 +399,7 @@ def section_view(request, section_slug):
     except IndexError:
         pass
     content = {'contents_sections': contents_sections, 'section_contact': section_contact, 'all_events': all_events, 'autho_section': all_sections_authorization}
-    return render_to_response("fdp_app/section_view.html", content, context_instance=RequestContext(request))
+    return render(request, "fdp_app/section_view.html", content)
 
 
 def infos_view(request, section_slug):
@@ -456,12 +414,12 @@ def infos_view(request, section_slug):
     except IndexError as e:
         on_error('Error in infos %s view : %s' % (section_slug, e))
     content = {'contents_sections': contents_sections, 'all_events': all_events}
-    return render_to_response("fdp_app/infos_view.html", content, context_instance=RequestContext(request))
+    return render(request, "fdp_app/infos_view.html", content)
 
 
 def activites_view(request):
     # all_sections = models.Section.objects.all().order_by('name')
-    return render_to_response("fdp_app/activites_view.html", {}, context_instance=RequestContext(request))
+    return render(request, "fdp_app/activites_view.html", {})
 
 
 def pictures_view(request, year=''):
@@ -497,30 +455,29 @@ def pictures_view(request, year=''):
     except IndexError as e:
         on_error('Error in pictures view 1 : %s' % e)
     content = {'years': years, 'all_events': all_events, 'autho_section': all_sections_authorization}
-    return render_to_response("fdp_app/pictures_view.html", content, context_instance=RequestContext(request))
+    return render(request, "fdp_app/pictures_view.html", content)
 
 
 def event_view(request, section_slug, event_slug):
     event = models.Event.objects.filter(id=event_slug)[0]
     event.pictures = get_all_pictures_in_event(event)
-    return render_to_response("fdp_app/event_view.html", {'event': event}, context_instance=RequestContext(request))
+    return render(request, "fdp_app/event_view.html", {'event': event})
+
 
 # get functions
 
-
-def get_section_infos(section):
-    logger.info(models.Section.objects.filter(url=section))
-    section = models.Section.objects.filter(url=section)[0]
+def get_section_infos(url):
+    try:
+        section = models.Section.objects.filter(url=url)[0]
+    except IndexError:
+        section = models.Section.objects.create(url='test')
     logger.info("in get section infos : %s" % section)
     contents_sections = dict(index=section.id, name=section.name, content=section.content, picture=section.picture, schedule=section.schedule, url=section.url)
-    logger.info("---------------------------------")
-    logger.info(contents_sections)
-    logger.info("---------------------------------")
     return contents_sections
 
 
 def get_section_name(section_id):
-    section = Section.objects.filter(id=section_id)[0]
+    section = models.Section.objects.filter(id=section_id)[0]
     return section.name
 
 

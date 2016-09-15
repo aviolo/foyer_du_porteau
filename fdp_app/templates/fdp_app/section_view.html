@@ -1,130 +1,116 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <link rel="stylesheet" href="{% url 'statics' 'stylesheets/header.css' %}" />
-        <link rel="stylesheet" href="{% url 'statics'  'stylesheets/style.css' %}" />
-        <link rel="stylesheet" href="{% url 'statics'  'stylesheets/font.css' %}" />
-        <link rel="stylesheet" href="{% url 'statics'  'stylesheets/blocks.css' %}" />
-        <link rel="stylesheet" href="{% url 'statics' 'stylesheets/footer.css' %}" />
-        <title>Foyer du Porteau</title>
-    </head>
-    <body>
-		{% include "fdp_app/header.html" %}
-        <div id="bloc_page">                       
-            {% include "fdp_app/left.html" %}
-            {% include "fdp_app/right.html" %}
-            <div class="center">
-			    <div id="content">
-                    <div class="block">
-                        <div class="title">{{ contents_sections.name }}</div>
-                            <div class="subtitle"> Responsable : 
-                                {% for contact in section_contact %}
-                                    {{ contact.name }}
-                                    {% if contact.number_phone %}
-                                        {{ contact.number_phone }}
-                                    {% endif %}
-                                    <br>
-                                {% endfor %}
-                                Horaires : {{ contents_sections.schedule }}
-                            </div>
-                            {% for section in autho_section %}
-                                {% if section.section__name == contents_sections.name %}
-                                    <div class="transparent_block" style="width:20%; float:right; border: 2px dashed #f67521;">
-                                        <div class="light_block">
-                                            <div class="left" style="width:10%;">
-                                                <img src="{% url 'statics' 'images/change.png' %}">
-                                            </div>
-                                            <div class="paragraphe">
-                                                <a href="{% url 'fdp_app-modify_section_view' contents_sections.url %}">Modifier la section</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
-						<div class="left">
-		                    {% if contents_sections.picture %}
-		                        <img src="{% url 'medias' contents_sections.picture %}" >
-		                    {% endif %}
-						</div>
-                        <div class="paragraphe">{{ contents_sections.content|safe|urlize|linebreaks }}</div>
+{% extends "fdp_app/base.html" %}{% load i18n %}{% load staticfiles %}
+
+{% block title %}{% trans "Section" %}{% endblock %}
+
+{% block body %}
+    <div class="center">
+        <div id="content">
+            <div class="block">
+                <div class="title">{{ contents_sections.name }}</div>
+                    <div class="subtitle"> Responsable : 
+                        {% for contact in section_contact %}
+                            {{ contact.name }}
+                            {% if contact.number_phone %}
+                                {{ contact.number_phone }}
+                            {% endif %}
+                            <br>
+                        {% endfor %}
+                        Horaires : {{ contents_sections.schedule }}
                     </div>
-                    <script type="text/javascript" src="http://slideshow.triptracker.net/slide.js"></script>
                     {% for section in autho_section %}
                         {% if section.section__name == contents_sections.name %}
-                            <a href="{% url 'fdp_app-add_event_view' contents_sections.url %}">
-                                <div class="transparent_block" style="width:30%; margin:auto;">
-                                    <div class="left">
-                                        <img src="{% url 'statics'  'images/add.png' %}">
+                            <div class="transparent_block" style="width:20%; float:right; border: 2px dashed #f67521;">
+                                <div class="light_block">
+                                    <div class="left" style="width:10%;">
+                                        <img src="{% static 'images/change.png' %}">
                                     </div>
-                                    <div class="paragraphe">Ajouter un évènement à la section {{ contents_sections.name }} </div>
+                                    <div class="paragraphe">
+                                        <a href="{% url 'fdp_app-modify_section_view' contents_sections.url %}">Modifier la section</a>
+                                    </div>
                                 </div>
-                            </a>
+                            </div>
                         {% endif %}
                     {% endfor %}
-                    {% for event in all_events %}
-					<div class="block">
-                        <div class="title">
-                            <a href="{% url 'fdp_app-event_view' contents_sections.url event.id %}">{{ event.name }}</a>
-						</div>
-
-                        <div class="subtitle"> Date : {{ event.date }}</div>
-
-                        {% for section in autho_section %}
-                            {% if section.section__name == contents_sections.name %}
-                                <div class="transparent_block" style="width:20%; float:right; border: 2px dashed #f67521;">
-                                    <div class="light_block">
-                                        <div class="left" style="width:10%;">
-                                            <img src="{% url 'statics' 'images/add.png' %}">
-                                        </div>
-                                        <div class="paragraphe">
-                                            <a href="{% url 'fdp_app-add_picture_view' contents_sections.url event.id %}">Ajouter des photos</a>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="light_block">
-                                        <div class="left" style="width:10%;">
-                                            <img src="{% url 'statics' 'images/change.png' %}">
-                                        </div>
-                                        <div class="paragraphe">
-                                            <a href="{% url 'fdp_app-modify_event_view' contents_sections.url event.id %}">Modifier</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-
-	                    {% if event.pictures %}
-						    <div class="left">
-                                <script type="text/javascript">
-                                var viewer_{{event.id}} = new PhotoViewer();
-                                </script> 
-                                {% for image in event.pictures %}
-                                    {% if forloop.first %}
-                                        <a href="javascript:void(viewer_{{event.id}}.show(0))">
-                                            <img src="{% url 'medias' image.miniature %}" >
-                                        </a>                           
-                                    {% endif %} 
-                                        <script type="text/javascript">
-                                            viewer_{{event.id}}.add("{% url 'medias' image.filename %}");
-                                        </script> 
-                                {% endfor %}
-						    </div>
-                            <div class="bottom">
-                                <a href="javascript:void(viewer_{{event.id}}.show(0))">
-                                {% for image in event.pictures|slice:"1:6" %}
-                                        <img class="images" src="{% url 'medias' image.miniature %}">
-                                {% endfor %}
-                                </a> 
-                            </div>
-	                    {% endif %}
-
-                		<div class="paragraphe">{{ event.content|safe|urlize|linebreaks|truncatewords:100 }}</div>
-				    </div>
-                  	{% endfor %}
+                <div class="left">
+                    {% if contents_sections.picture %}
+                        <img src="{% url 'media' contents_sections.picture %}" >
+                    {% endif %}
                 </div>
+                <div class="paragraphe">{{ contents_sections.content|safe|urlize|linebreaks }}</div>
             </div>
+            <script type="text/javascript" src="http://slideshow.triptracker.net/slide.js"></script>
+            {% for section in autho_section %}
+                {% if section.section__name == contents_sections.name %}
+                    <a href="{% url 'fdp_app-add_event_view' contents_sections.url %}">
+                        <div class="transparent_block" style="width:30%; margin:auto;">
+                            <div class="left">
+                                <img src="{% static  'images/add.png' %}">
+                            </div>
+                            <div class="paragraphe">Ajouter un évènement à la section {{ contents_sections.name }} </div>
+                        </div>
+                    </a>
+                {% endif %}
+            {% endfor %}
+            {% for event in all_events %}
+            <div class="block">
+                <div class="title">
+                    <a href="{% url 'fdp_app-event_view' contents_sections.url event.id %}">{{ event.name }}</a>
+                </div>
+
+                <div class="subtitle"> Date : {{ event.date }}</div>
+
+                {% for section in autho_section %}
+                    {% if section.section__name == contents_sections.name %}
+                        <div class="transparent_block" style="width:20%; float:right; border: 2px dashed #f67521;">
+                            <div class="light_block">
+                                <div class="left" style="width:10%;">
+                                    <img src="{% static 'images/add.png' %}">
+                                </div>
+                                <div class="paragraphe">
+                                    <a href="{% url 'fdp_app-add_picture_view' contents_sections.url event.id %}">Ajouter des photos</a>
+                                </div>
+                            </div>
+                            
+                            <div class="light_block">
+                                <div class="left" style="width:10%;">
+                                    <img src="{% static 'images/change.png' %}">
+                                </div>
+                                <div class="paragraphe">
+                                    <a href="{% url 'fdp_app-modify_event_view' contents_sections.url event.id %}">Modifier</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                {% if event.pictures %}
+                    <div class="left">
+                        <script type="text/javascript">
+                        var viewer_{{event.id}} = new PhotoViewer();
+                        </script> 
+                        {% for image in event.pictures %}
+                            {% if forloop.first %}
+                                <a href="javascript:void(viewer_{{event.id}}.show(0))">
+                                    <img src="{% url 'media' image.miniature %}" >
+                                </a>                           
+                            {% endif %} 
+                                <script type="text/javascript">
+                                    viewer_{{event.id}}.add("{% url 'media' image.filename %}");
+                                </script> 
+                        {% endfor %}
+                    </div>
+                    <div class="bottom">
+                        <a href="javascript:void(viewer_{{event.id}}.show(0))">
+                        {% for image in event.pictures|slice:"1:6" %}
+                                <img class="images" src="{% url 'media' image.miniature %}">
+                        {% endfor %}
+                        </a> 
+                    </div>
+                {% endif %}
+
+                <div class="paragraphe">{{ event.content|safe|urlize|linebreaks|truncatewords:100 }}</div>
+            </div>
+            {% endfor %}
         </div>
-        {% include "fdp_app/footer.html" %}
-    </body>
-</html>
+    </div>
+{% endblock %}

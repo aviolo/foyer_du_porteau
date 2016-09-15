@@ -1,0 +1,72 @@
+{% load i18n %}{% load staticfiles %}<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANG }}">
+<head>
+    <title>Foyer du Porteau - {% block wtitle %}{% endblock %}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+    <link rel="shortcut icon" href="{% static 'images/favicon.png' %}?_=1"/>
+    <link rel="stylesheet" href="{% static 'stylesheets/header.css' %}"/>
+    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}"/>
+    <link rel="stylesheet" href="{% static 'stylesheets/font.css' %}"/>
+    <link rel="stylesheet" href="{% static 'stylesheets/blocks.css' %}"/>
+    <link rel="stylesheet" href="{% static 'stylesheets/footer.css' %}"/>
+
+    <script src="{% static 'javascripts/jquery-latest.min.js' %}"></script>
+    <script src="{% static 'javascripts/jquery-ui-timepicker-addon.js' %}"></script>
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <div id="header">
+        <div class="header-bg">
+            {% if username %}
+                <div class="username">
+                    Bonjour {{ username }}<br />
+                    <!--<a href="{% url 'fdp_app-menu_view' %}">menu<br /></a>-->
+                    <a href="{% url 'fdp_app-logout_view' %}">se déconnecter<br /></a>
+                </div>
+            {% else %}
+                <div class="username">
+                    <a href="{% url 'fdp_app-login_view' %}"> s'identifier</a>
+                </div>
+            {% endif %}
+            <a href="{% url 'fdp_app-home_view' %}"><div class="banner"></div></a>
+        </div>
+        <div id="menu">
+            {% for section in all_sections %}
+                {% if section.types == 1 and section.hide != 1 %}
+                    {% if section.name == 'Accueil' %}
+                        <li><a href="{% url 'fdp_app-home_view' %}">{{ section.name }}</a></li>
+                    {% elif section.name == 'Activités' %}
+                        <li><a href="{% url 'fdp_app-activites_view' %}">{{ section.name }}</a></li>
+                    {% elif section.name == 'Précédent site' %}
+                        <li><a href="http://www.old.foyerduporteau.net/">{{ section.name }}</a></li>
+                    {% elif section.name == 'Photos' %}
+                        <li><a href="{% url 'fdp_app-pictures_view' 2014 %}">{{ section.name }}</a></li>
+                    {% elif section.name == 'Animations' %}
+                        <li><a href="{% url 'fdp_app-pictures_view' %}">{{ section.name }}</a></li>
+                    {% else %}
+                        <li><a href="{% url 'fdp_app-infos_view' section.url %}">{{ section.name }}</a></li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <div id="bloc_page">
+        {% include "fdp_app/sides.html" %}
+        {% block body %}{% endblock %}
+    </div>
+    <footer id="footer">
+        <div class="footer-bg">
+        <div id="footer_black"></div>
+            <div id="visites">
+            <a href="http://www.compteurdevisite.com" title="mon compteur"><img src="http://counter3.statcounterfree.com/private/compteurdevisite.php?c=ef334c3616ac6f19e47b15ec3c2becff" border="0" title="mon compteur" alt="mon compteur"></a>visiteurs
+        </div>
+            <div id="createurs">Développement web : Flavie Lancereau, Anthony Violo</div>
+            <div id="createurs">Logo du Foyer déssiné par <a href="http://clochettecf.blogspot.fr">Cassandre</a></div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,20 +1,26 @@
 """
 Read and write ZIP files.
 """
-import struct, os, time, sys, shutil
-import binascii, io, stat
+import struct
+import os
+import time
+import sys
+import shutil
+import binascii
+import stat
 import io
 import re
 
 try:
-    import zlib # We may need its compression method
+    import zlib  # We may need its compression method
     crc32 = zlib.crc32
 except ImportError:
     zlib = None
     crc32 = binascii.crc32
 
 __all__ = ["BadZipfile", "error", "ZIP_STORED", "ZIP_DEFLATED", "is_zipfile",
-           "ZipInfo", "ZipFile", "PyZipFile", "LargeZipFile" ]
+           "ZipInfo", "ZipFile", "PyZipFile", "LargeZipFile"]
+
 
 class BadZipfile(Exception):
     pass
@@ -395,7 +401,6 @@ class ZipInfo (object):
                     idx += 1
 
                 if self.header_offset == 0xffffffff:
-                    old = self.header_offset
                     self.header_offset = counts[idx]
                     idx+=1
 
@@ -990,7 +995,7 @@ class ZipFile:
             return targetpath
 
         source = self.open(member, pwd=pwd)
-        target = file(targetpath, "wb")
+        target = open(targetpath, "wb")
         shutil.copyfileobj(source, target)
         source.close()
         target.close()
@@ -1239,9 +1244,6 @@ class ZipFile:
 
             # check for valid comment length
             if len(self.comment) >= ZIP_MAX_COMMENT:
-                if self.debug > 0:
-                    msg = 'Archive comment is too long; truncating to %d bytes' \
-                          % ZIP_MAX_COMMENT
                 self.comment = self.comment[:ZIP_MAX_COMMENT]
 
             endrec = struct.pack(structEndArchive, stringEndArchive,

@@ -23,7 +23,7 @@ class UserProfile(models.Model):
 class Right(models.Model):
     name = models.CharField(max_length=255)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'right %s' % self.name
 
 
@@ -36,7 +36,7 @@ class Section(models.Model):
     schedule = models.CharField(max_length=255, blank=True, null=True)
     hide = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'section %s' % self.name
 
 
@@ -54,7 +54,7 @@ class Event(models.Model):
     user = models.ForeignKey(User)
     last_modification_date = models.DateTimeField('date published', default=datetime.datetime.now)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'event %s' % self.name
 
 
@@ -73,25 +73,14 @@ class Picture(models.Model):
     event = models.ForeignKey(Event)
 
 
-def upload_received_handler(sender, data, **kwargs):
-    if file:
-        new_media = Media.objects.create(
-            file=data,
-            new_upload=True,
-        )
-
-    new_media.save()
-    # upload_received.connect(upload_received_handler, dispatch_uid='uploadify.media.upload_received')
-
-
 class Media(models.Model):
     file = models.FileField(upload_to='images/upload/', null=True, blank=True)
     new_upload = models.BooleanField()
+
+
 # -------------------------------------------------------------------------------
 # Listen to users creations to create profiles
 # -------------------------------------------------------------------------------
-
-
 def create_user_profile(sender, instance, created, **kwargs):
     if sender == User and created is True:
         profile = UserProfile(user=instance)

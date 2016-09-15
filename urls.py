@@ -1,27 +1,15 @@
-from django.conf.urls import patterns, include, url
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 from django.conf import settings
-from django.views.static import serve
-from django.utils.functional import curry
-from django.views.defaults import *
-
-# Uncomment the next two lines to enable the admin:
+from django.conf.urls import include, url
 from django.contrib import admin
+from django.views.static import serve
+
 admin.autodiscover()
 
-#handler404 = 'mysite.views.error404'
-handler500 = 'fdp_app.views.error500'
 
-urlpatterns = patterns('',
-    url(r'^medias/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT, 'show_indexes': settings.DEBUG}, name='medias'),
-    url(r'^statics/(?P<path>.*)$', serve, {'document_root': settings.STATIC_URL, 'show_indexes': settings.DEBUG}, name='statics'),
+urlpatterns = [
+    url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT, 'show_indexes': settings.DEBUG}, name='media'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include('fdp_app.urls')),
-    # Examples:
-    # url(r'^$', 'fdp_django.views.home', name='home'),
-    # url(r'^fdp_django/', include('fdp_django.foo.urls')),
-
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
-)
+]
