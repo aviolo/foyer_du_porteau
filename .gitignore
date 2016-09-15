@@ -29,6 +29,7 @@ nosetests.xml
 db.sqlite3
 hosting-private
 hosting-public
+media
 settings_override.py
 static/admin
 static/debug_toolbar
