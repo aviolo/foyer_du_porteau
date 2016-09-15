@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+from PIL import Image
+import imghdr
+import logging
+import os
+import subprocess
+import zipfile
+
 from django.template import defaultfilters
 
 from fdp_app.models import Picture, User, Event
 
-import imghdr
-import zipfile
-import os
-import subprocess
-# Waring: deprecated !
-
-import logging
 logger = logging.getLogger('fdp_app')
 
 IMAGES_EXTENSIONS = ('.png', '.gif', '.jpg', '.bmp', '.jpeg')
@@ -33,8 +34,17 @@ def get_image_size(image_path):
         return 0, 0
 
 
-def resize_image(image_path):
-    os.system('mogrify -resize 1280 %s' % image_path.encode('utf-8'))
+def resize_image(image_path, width=1280):
+    try:
+        is_png = image_path.lower().endswith('png')
+        image = Image.open(image_path)
+        image.load()
+        if image.mode not in ['RGB', 'RGBA']:
+            image = image.convert('RGB')
+        image.thumbnail((1280, width * 4 / 3), Image.ANTIALIAS)
+        image.save(image_path, 'PNG' if is_png else 'JPEG')
+    except Exception as e:
+        return False, 'Error when using PIL: %s' % e
 
 
 def check_and_resize_image(image_path):
@@ -60,7 +70,7 @@ def check_type_file(uploaded_file):
         abs_path = os.path.join(parent_dir, media_path, filename)
         cmd = 'mv \'%s\' %s' % (uploaded_file.path, abs_path)
         try:
-            os.system(cmd.encode('utf-8'))
+            os.system(cmd)
         except Exception:
             logger.info("error when move file")
             return None
@@ -114,7 +124,7 @@ def save_files(uploaded_file, year, section_name, event_name, event_id, user_id)
                 image_type = imghdr.what(tmp_file_path)
                 if image_type:
                     add_img_to_db(tmp_file_path, year, section_name, event_name, event_id, user_id)
-            os.system('rm -rf %s' % dezip_path.encode('utf-8'))
+            os.system('rm -rf %s' % dezip_path)
         else:
             pass
     else:
@@ -137,14 +147,13 @@ def add_img_to_db(image_file_path, year, section_name, event_name, event_id=None
         os.makedirs(abs_min_dir_pictures)
     check_and_resize_image(image_file_path)
     cmd = 'mv \'%s\' %s' % (image_file_path, abs_dir_pictures)
-    os.system(cmd.encode('utf-8'))
+    os.system(cmd)
     # generate miniature
     new_path = os.path.join(abs_dir_pictures, filename)
     miniature_path = os.path.join(abs_min_dir_pictures, filename)
-    logger.info('cp %s %s' % (new_path.encode('utf8'), miniature_path.encode('utf8')))
-    os.system('cp %s %s' % (new_path.encode('utf8'), miniature_path.encode('utf8')))
-    logger.info('mogrify -resize 250 %s' % miniature_path.encode('utf8'))
-    os.system('mogrify -resize 250 %s' % miniature_path.encode('utf8'))
+    logger.info('cp %s %s' % (new_path, miniature_path))
+    os.system('cp %s %s' % (new_path, miniature_path))
+    resize_image(miniature_path, width=250)
     # save to database
     path_bdd = os.path.join(year, section_name, event_name, filename)
     new_picture = Picture(title=filename, filename='user_pictures/%s' % path_bdd, user=User.objects.filter(id=user_id)[0], event=Event.objects.filter(id=event_id)[0])
@@ -199,10 +208,10 @@ def move_picture_directory(year, old_section_name, new_section_name, name_event,
     logger.info("abs_new_dir : %s, abs_new_min_dir : %s" % (abs_new_dir_pictures, abs_new_min_dir_pictures))
     cmd = 'mv \'%s\' \'%s\'' % (abs_old_dir_pictures, abs_new_dir_pictures)
     logger.info("move pictures")
-    os.system(cmd.encode('utf-8'))
+    os.system(cmd)
     cmd = 'mv \'%s\' %s' % (abs_old_min_dir_pictures, abs_new_min_dir_pictures)
     logger.info("move min pictures")
-    os.system(cmd.encode('utf-8'))
+    os.system(cmd)
     for picture in all_pictures_to_move:
         filename = str(picture.filename)
         img_file = os.path.basename(filename)

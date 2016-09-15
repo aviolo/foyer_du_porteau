@@ -470,7 +470,7 @@ def get_section_infos(url):
     try:
         section = models.Section.objects.filter(url=url)[0]
     except IndexError:
-        section = models.Section.objects.create(url='test')
+        section = models.Section.objects.create(url=url, name='test')
     logger.info("in get section infos : %s" % section)
     contents_sections = dict(index=section.id, name=section.name, content=section.content, picture=section.picture, schedule=section.schedule, url=section.url)
     return contents_sections
