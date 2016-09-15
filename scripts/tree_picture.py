@@ -58,7 +58,7 @@ def check_directory(year, section_name, event_name, pictures):
                 new_path_to_move = os.path.join(event_dir, picture_name)
                 filename_bdd = os.path.join('user_pictures' + new_path_to_move.split("user_pictures")[1])
                 if len(filename_bdd) > 250:
-                    print "path is too big : %s" %filename_bdd
+                    print("path is too big : %s" %filename_bdd)
                 else:
                     p = Picture.objects.get(pk=picture.id)
                     p.filename = filename_bdd

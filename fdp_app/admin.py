@@ -7,7 +7,7 @@
 from django.contrib import admin
 from django.db import models as dj_models
 # ForuMedia
-import models
+from . import models
 
 # Automatic model register
 EXCLUDED_MODELS = ['User', 'Group',]

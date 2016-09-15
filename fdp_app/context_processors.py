@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import models
+from . import models
 from django.contrib.admin.models import LogEntry
 from django.contrib.contenttypes.models import ContentType
 from datetime import datetime
-from views import get_all_pictures_in_event
+from .views import get_all_pictures_in_event
 
 def is_element_already_logged(new_element, modification_list):
     for previous_entry in modification_list :

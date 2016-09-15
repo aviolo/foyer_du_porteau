@@ -186,8 +186,8 @@ if BASE_DIR not in sys.path:
     sys.path.append(BASE_DIR) # to allow imports
 try:
     from settings_override import *
-except Exception, e:
-    if not u'No module named settings_override' in unicode(e):
+except Exception as e:
+    if not 'No module named settings_override' in str(e):
         import traceback
         traceback.print_exc()
 

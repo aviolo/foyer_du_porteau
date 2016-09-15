@@ -24,7 +24,7 @@ class Right(models.Model):
     name = models.CharField(max_length=255)
 
     def __unicode__(self):
-        return u'right %s' % self.name
+        return 'right %s' % self.name
 
 
 class Section(models.Model):
@@ -37,7 +37,7 @@ class Section(models.Model):
     hide = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return u'section %s' % self.name
+        return 'section %s' % self.name
 
 
 class UserSection(models.Model):
@@ -55,7 +55,7 @@ class Event(models.Model):
     last_modification_date = models.DateTimeField('date published', default=datetime.datetime.now)
 
     def __unicode__(self):
-        return u'event %s' % self.name
+        return 'event %s' % self.name
 
 
 class Comment(models.Model):

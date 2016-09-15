@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import models
+from . import models
 from datetime import datetime
 from fdp_app.models import Section
 from fdp_app.models import Event
-from upload_utils import save_files, move_picture_directory, check_type_file
+from .upload_utils import save_files, move_picture_directory, check_type_file
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -103,7 +103,7 @@ def modify_profile_view(request):
     try:
         home_sections = get_section_infos('foyerduporteau')
         all_events = get_next_thrid_event_in_section(home_sections['index'])
-    except IndexError, e:
+    except IndexError as e:
         on_error('Error in modify profile view : %s' % e)
     content = {'home_sections': home_sections, 'all_events': all_events}
     return render_to_response("fdp_app/modify_profile_view.html", content, context_instance=RequestContext(request))
@@ -113,7 +113,7 @@ def modify_section_view(request, section_slug):
     try:
         sections_infos = get_section_infos(section_slug)
         section_changed = Section.objects.get(pk=sections_infos['index'])
-    except IndexError, e:
+    except IndexError as e:
         on_error('Erreur lors de la recuperation des donnees de sections : %s' % e)
     if request.method == 'POST':
         section_form = modifySectionForm(request.POST, request.FILES, instance=section_changed)
@@ -129,7 +129,7 @@ def modify_section_view(request, section_slug):
                         section_changed.save()
                     else:
                         raise 'File uploaded is not an image'
-            except Exception, e:
+            except Exception as e:
                 on_error('Erreur lors de la modification des donnees de sections : %s' % e)
             section_contact = get_section_contact(sections_infos['index'])
             all_events = get_all_event_in_section(sections_infos['index'])
@@ -154,7 +154,7 @@ def modify_section_form(section_infos):
         modify_section_form.fields['picture'].initial = section_infos['picture']
         modify_section_form.fields['content'].initial = section_infos['content']
         modify_section_form.fields['schedule'].initial = section_infos['schedule']
-    except IndexError, e:
+    except IndexError as e:
         on_error('Erreur lors du chargement du formulaire de section : %s' % e)
     content = {'modify_section_form': modify_section_form}
     return content
@@ -168,7 +168,7 @@ def modify_event_view(request, section_slug, event_slug):
         sections_infos = get_section_infos(section_slug)
         event = get_event_by_id(event_slug)
         event_changed = Event.objects.get(pk=event.id)
-    except IndexError, e:
+    except IndexError as e:
         on_error('Error in add event view 1 : %s' % e)
     user = request.user
     the_user = models.User.objects.filter(username=user)[0]
@@ -217,7 +217,7 @@ def modify_event_view(request, section_slug, event_slug):
                     event_changed.save()
                     move_picture_directory(year, old_section_name, new_section_name, event_name, old_name, all_pictures_to_move)
                     # UPDATE BDD chemin image
-            except IndexError, e:
+            except IndexError as e:
                 on_error('Error in add event view 2 : %s' % e)
             section_contact = get_section_contact(sections_infos['index'])
             all_events = get_all_event_in_section(sections_infos['index'])
@@ -240,7 +240,7 @@ def modify_event_view(request, section_slug, event_slug):
                 modify_event_form.fields['name'].initial = event.name
                 modify_event_form.fields['content'].initial = event.content
                 modify_event_form.fields['date'].initial = event.date
-            except IndexError, e:
+            except IndexError as e:
                 on_error('Error in modify event view 1 : %s' % e)
             csrfContext = RequestContext(request)
             on_error('les données sont incorrectes', will_send_mail=False)
@@ -260,7 +260,7 @@ def modify_event_view(request, section_slug, event_slug):
             modify_event_form.fields['name'].initial = event.name
             modify_event_form.fields['content'].initial = event.content
             modify_event_form.fields['date'].initial = event.date
-        except IndexError, e:
+        except IndexError as e:
             on_error('Error in modify event view 1 : %s' % e)
         csrfContext = RequestContext(request)
     content = {'home_sections': home_sections, 'all_events': all_sections, 'modify_event_form': modify_event_form}
@@ -274,7 +274,7 @@ def add_event_view(request, section_slug):
     sections_infos = None
     try:
         sections_infos = get_section_infos(section_slug)
-    except IndexError, e:
+    except IndexError as e:
         on_error('Error in add event view 1 : %s' % e)
     user = request.user
     the_user = models.User.objects.filter(username=user)[0]
@@ -290,7 +290,7 @@ def add_event_view(request, section_slug):
                     section_name = defaultfilters.slugify(section_name)
                     event_name = defaultfilters.slugify(event.name)
                     save_files(request.FILES['file'], year, section_name, event_name, new_event.pk, the_user.id)
-            except IndexError, e:
+            except IndexError as e:
                 on_error('Error in add event view 2 : %s' % e)
             section_contact = get_section_contact(sections_infos['index'])
             all_events = get_all_event_in_section(sections_infos['index'])
@@ -313,7 +313,7 @@ def add_picture_view(request, section_slug, event_slug):
     picture_form = None
     try:
         sections_infos = get_section_infos(section_slug)
-    except IndexError, e:
+    except IndexError as e:
         on_error('Error in add picture view 1 : %s' % e)
     user = request.user
     the_user = models.User.objects.filter(username=user)[0]
@@ -329,7 +329,7 @@ def add_picture_view(request, section_slug, event_slug):
                 section_name = defaultfilters.slugify(section_name)
                 event_name = defaultfilters.slugify(event.name)
                 save_files(request.FILES['file'], year, section_name, event_name, event_slug, the_user.id)
-            except IndexError, e:
+            except IndexError as e:
                 on_error('Error in add picture view 2 : %s' % e)
         section_contact = get_section_contact(sections_infos['index'])
         all_events = get_all_event_in_section(sections_infos['index'])
@@ -358,7 +358,7 @@ def menu_view(request):
     try:
         home_sections = get_section_infos('foyerduporteau')
         all_events = get_next_thrid_event_in_section(home_sections['index'])
-    except IndexError, e:
+    except IndexError as e:
         on_error('Error in menu view : %s' % e)
     content = {'home_sections': home_sections, 'all_events': all_events}
     return render_to_response("fdp_app/menu_view.html", content, context_instance=RequestContext(request))
@@ -371,7 +371,7 @@ def logout_view(request):
     try:
         home_sections = get_section_infos('foyerduporteau')
         all_events = get_next_thrid_event_in_section(home_sections['index'])
-    except IndexError, e:
+    except IndexError as e:
         on_error('Error in logout view : %s' % e)
     content = {'home_sections': home_sections, 'all_events': all_events, 'username': None, }
     return HttpResponseRedirect('/', content)
@@ -406,7 +406,7 @@ def login_view(request):
                         else:
                             section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
                             all_sections_authorization = section_query.values('section__name', 'section__id')
-                except IndexError, e:
+                except IndexError as e:
                     on_error('Error in login view : %s' % e)
                 content = {'home_sections': home_sections, 'all_events': all_events, 'username': user, 'autho_section': all_sections_authorization}
                 return HttpResponseRedirect('/', content)
@@ -453,7 +453,7 @@ def infos_view(request, section_slug):
         logger.info("%s" % contents_sections['index'])
         all_events = get_all_event_in_section(contents_sections['index'])
         logger.info(all_events)
-    except IndexError, e:
+    except IndexError as e:
         on_error('Error in infos %s view : %s' % (section_slug, e))
     content = {'contents_sections': contents_sections, 'all_events': all_events}
     return render_to_response("fdp_app/infos_view.html", content, context_instance=RequestContext(request))
@@ -494,7 +494,7 @@ def pictures_view(request, year=''):
             else:
                 section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
                 all_sections_authorization = section_query.values('section__name', 'section__id', 'section__url')
-    except IndexError, e:
+    except IndexError as e:
         on_error('Error in pictures view 1 : %s' % e)
     content = {'years': years, 'all_events': all_events, 'autho_section': all_sections_authorization}
     return render_to_response("fdp_app/pictures_view.html", content, context_instance=RequestContext(request))

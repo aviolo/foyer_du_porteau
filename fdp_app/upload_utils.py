@@ -7,7 +7,7 @@ from fdp_app.models import Picture, User, Event
 import imghdr
 import zipfile
 import os
-import commands
+import subprocess
 # Waring: deprecated !
 
 import logging
@@ -22,7 +22,7 @@ miniatures_dir = 'medias/miniatures/user_pictures'
 
 def get_image_size(image_path):
     try:
-        result = commands.getoutput('identify %s' % image_path)
+        result = subprocess.getoutput('identify %s' % image_path)
         # result example :
         # P1060285.JPG JPEG 4000x3000 4000x3000+0+0 8-bit DirectClass 5.326MB 0.000u 0:00.009
         image_infos = result.split(' ')
@@ -162,12 +162,12 @@ def handle_uploaded_file(uploaded_file, upload_path):
     if not os.path.exists(folder):
         try:
             os.makedirs(folder)
-        except Exception, e:
+        except Exception as e:
             return False, 'Error when trying to create folder for upload. Error is: %s' % e
     # create new file
     try:
         destination = open(upload_path, 'wb+')
-    except Exception, e:
+    except Exception as e:
         return False, 'Error when trying to create file. Error is: %s' % e
     # write new file
     for chunk in uploaded_file.chunks():
