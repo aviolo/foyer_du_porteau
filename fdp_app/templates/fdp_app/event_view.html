@@ -17,8 +17,7 @@
                         Date : <div class="schedule">{{ event.date }}</div>
                     </div>
                     <div class="paragraphe">{{ event.content|linebreaks }}</div>
-                    <script type="text/javascript"
-                        src="http://slideshow.triptracker.net/slide.js"></script>
+                    <script type="text/javascript" src="{% static 'javascripts/slide.js' %}"></script>
                     <script type="text/javascript">
                         var viewer = new PhotoViewer();
                         {% for image in event.pictures %}
