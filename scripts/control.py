@@ -1,28 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-### BEGIN INIT INFO
-# Provides:          fdp
-# Required-Start:    $local_fs $network
-# Required-Stop:     $local_fs $network
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: fdp
-# Description:       fdp management script
-### END INIT INFO
-
-# This script should be located in /etc/init.d/fdp
-#   ln -s control.py /etc/init.d/fdp
-# To make this script start at boot:
-#   update-rc.d fdp defaults 96 00
-# To remove it use:
-#   update-rc.d -f fdp remove
-
-"""
+'''
 Script to control fdp server.
 
 Usage: <script name> [-d] [start|restart|stop|dump|update]
-"""
+    -d: daemonize
+'''
 import datetime
 import imp
 import os
