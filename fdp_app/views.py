@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.template import defaultfilters, RequestContext
+from django.template import defaultfilters
 
 from fdp_app import forms
 from fdp_app import models
@@ -51,8 +51,11 @@ def home_view(request):
             logger.info("authorization section : %s" % all_sections_authorization)
     except IndexError:
         pass
-    content = {'home_sections': home_sections, 'all_events': all_events, 'autho_section': all_sections_authorization}
-    return render(request, "fdp_app/home_view.html", content)
+    return render(request, "fdp_app/home_view.html", {
+        'home_sections': home_sections,
+        'all_events': all_events,
+        'autho_section': all_sections_authorization,
+    })
 
 
 def modify_profile_view(request):
@@ -63,8 +66,10 @@ def modify_profile_view(request):
         all_events = get_next_thrid_event_in_section(home_sections['index'])
     except IndexError as e:
         on_error('Error in modify profile view : %s' % e)
-    content = {'home_sections': home_sections, 'all_events': all_events}
-    return render(request, "fdp_app/modify_profile_view.html", content)
+    return render(request, "fdp_app/modify_profile_view.html", {
+        'home_sections': home_sections,
+        'all_events': all_events
+    })
 
 
 def modify_section_view(request, section_slug):
@@ -98,12 +103,10 @@ def modify_section_view(request, section_slug):
         else:
             on_error('les donnees saisit dans le changement de section sont incorrectes', will_send_mail=False)
             content = modify_section_form(sections_infos)
-            csrfContext = RequestContext(request)
-            return render(request, "fdp_app/modify_section_view.html", content, context_instance=csrfContext)
+            return render(request, "fdp_app/modify_section_view.html", content)
     else:
         content = modify_section_form(sections_infos)
-        csrfContext = RequestContext(request)
-    return render(request, "fdp_app/modify_section_view.html", content, context_instance=csrfContext)
+    return render(request, "fdp_app/modify_section_view.html", content)
 
 
 def modify_section_form(section_infos):
@@ -200,7 +203,6 @@ def modify_event_view(request, section_slug, event_slug):
                 modify_event_form.fields['date'].initial = event.date
             except IndexError as e:
                 on_error('Error in modify event view 1 : %s' % e)
-            csrfContext = RequestContext(request)
             on_error('les données sont incorrectes', will_send_mail=False)
     else:
         try:
@@ -220,9 +222,11 @@ def modify_event_view(request, section_slug, event_slug):
             modify_event_form.fields['date'].initial = event.date
         except IndexError as e:
             on_error('Error in modify event view 1 : %s' % e)
-        csrfContext = RequestContext(request)
-    content = {'home_sections': home_sections, 'all_events': all_sections, 'modify_event_form': modify_event_form}
-    return render(request, "fdp_app/modify_event_view.html", content, context_instance=csrfContext)
+    return render(request, "fdp_app/modify_event_view.html", {
+        'home_sections': home_sections,
+        'all_events': all_sections,
+        'modify_event_form': modify_event_form,
+    })
 
 
 def add_event_view(request, section_slug):
@@ -260,9 +264,9 @@ def add_event_view(request, section_slug):
             on_error('le formulaire est mal rempli', will_send_mail=False)
     else:
         event_form = forms.EventForm(request.POST, request.FILES, instance=models.Event(user_id=the_user.id))
-    csrfContext = RequestContext(request)
-    content = {'event_form': event_form}
-    return render(request, "fdp_app/add_event_view.html", content, context_instance=csrfContext)
+    return render(request, "fdp_app/add_event_view.html", {
+        'event_form': event_form,
+    })
 
 
 def add_picture_view(request, section_slug, event_slug):
@@ -305,9 +309,11 @@ def add_picture_view(request, section_slug, event_slug):
         return HttpResponseRedirect('/%s' % (sections_infos['url']), content)
     else:
         picture_form = forms.PictureForm(request.POST, request.FILES)
-    csrfContext = RequestContext(request)
-    content = {'home_sections': sections_infos, 'all_events': all_events, 'picture_form': picture_form}
-    return render(request, "fdp_app/add_picture_view.html", content, context_instance=csrfContext)
+    return render(request, "fdp_app/add_picture_view.html", {
+        'home_sections': sections_infos,
+        'all_events': all_events,
+        'picture_form': picture_form,
+    })
 
 
 def menu_view(request):
@@ -318,8 +324,10 @@ def menu_view(request):
         all_events = get_next_thrid_event_in_section(home_sections['index'])
     except IndexError as e:
         on_error('Error in menu view : %s' % e)
-    content = {'home_sections': home_sections, 'all_events': all_events}
-    return render(request, "fdp_app/menu_view.html", content)
+    return render(request, "fdp_app/menu_view.html", {
+        'home_sections': home_sections,
+        'all_events': all_events,
+    })
 
 
 def logout_view(request):
@@ -372,8 +380,9 @@ def login_view(request):
                 state = "Your account is not active, please contact the site admin."
         else:
             state = "Your username and/or password were incorrect."
-    content = {'state': state}
-    return render(request, 'fdp_app/login_view.html', content)
+    return render(request, 'fdp_app/login_view.html', {
+        'state': state,
+    })
 
 
 def section_view(request, section_slug):
@@ -398,8 +407,12 @@ def section_view(request, section_slug):
                 all_sections_authorization = section_query.values('section__name', 'section__id')
     except IndexError:
         pass
-    content = {'contents_sections': contents_sections, 'section_contact': section_contact, 'all_events': all_events, 'autho_section': all_sections_authorization}
-    return render(request, "fdp_app/section_view.html", content)
+    return render(request, "fdp_app/section_view.html", {
+        'contents_sections': contents_sections,
+        'section_contact': section_contact,
+        'all_events': all_events,
+        'autho_section': all_sections_authorization,
+    })
 
 
 def infos_view(request, section_slug):
@@ -413,13 +426,15 @@ def infos_view(request, section_slug):
         logger.info(all_events)
     except IndexError as e:
         on_error('Error in infos %s view : %s' % (section_slug, e))
-    content = {'contents_sections': contents_sections, 'all_events': all_events}
-    return render(request, "fdp_app/infos_view.html", content)
+    return render(request, "fdp_app/infos_view.html", {
+        'contents_sections': contents_sections,
+        'all_events': all_events,
+    })
 
 
 def activites_view(request):
     # all_sections = models.Section.objects.all().order_by('name')
-    return render(request, "fdp_app/activites_view.html", {})
+    return render(request, "fdp_app/activites_view.html")
 
 
 def pictures_view(request, year=''):
@@ -454,8 +469,11 @@ def pictures_view(request, year=''):
                 all_sections_authorization = section_query.values('section__name', 'section__id', 'section__url')
     except IndexError as e:
         on_error('Error in pictures view 1 : %s' % e)
-    content = {'years': years, 'all_events': all_events, 'autho_section': all_sections_authorization}
-    return render(request, "fdp_app/pictures_view.html", content)
+    return render(request, "fdp_app/pictures_view.html", {
+        'years': years,
+        'all_events': all_events,
+        'autho_section': all_sections_authorization,
+    })
 
 
 def event_view(request, section_slug, event_slug):
