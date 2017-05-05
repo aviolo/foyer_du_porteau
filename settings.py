@@ -94,7 +94,7 @@ STATICFILES_FINDERS = (
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'ki!6-4kz7#-4_7h$2i33l&amp;zx##@93yi-x36w@c4+m=77=str7q'
 
-TEMPLATES = (
+TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'APP_DIRS': True,
@@ -111,19 +111,22 @@ TEMPLATES = (
             )
         },
     },
-)
+]
 
-MIDDLEWARE = (
-    'django.middleware.common.CommonMiddleware',
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-)
+]
 
 ROOT_URLCONF = 'urls'
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -131,7 +134,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'fdp_app',
-)
+]
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -192,6 +195,8 @@ if DEBUG:
     TEMPLATES[0]['OPTIONS']['string_if_invalid'] = 'Invalid template string: "%s"'
     LOGGING['root']['level'] = 'DEBUG'
     LOGGING['root']['handlers'] = ['console']
+    import warnings
+    warnings.simplefilter('always', DeprecationWarning)
 else:
     import logging
     logging.captureWarnings(False)
