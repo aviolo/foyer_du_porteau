@@ -16,6 +16,11 @@ MANAGERS = ADMINS
 BASE_DIR = os.path.dirname(os.path.abspath(os.path.expanduser(__file__)))
 if not os.path.exists(os.path.join(BASE_DIR, 'logs')):
     os.makedirs(os.path.join(BASE_DIR, 'logs'))
+TMP_DIR = os.path.join(BASE_DIR, 'temp')
+if not os.path.exists(TMP_DIR):
+    os.makedirs(TMP_DIR)
+FILE_UPLOAD_TEMP_DIR = TMP_DIR
+FILE_UPLOAD_PERMISSIONS = 0o644
 
 DATABASES = {
     'default': {
