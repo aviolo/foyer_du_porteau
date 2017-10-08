@@ -310,21 +310,6 @@ def add_picture_view(request, section_slug, event_id):
     })
 
 
-@login_required
-def menu_view(request):
-    home_sections = None
-    all_events = None
-    try:
-        home_sections = get_section_infos('foyerduporteau')
-        all_events = get_next_thrid_event_in_section(home_sections['index'])
-    except IndexError as e:
-        on_error('Error in menu view : %s' % e)
-    return render(request, "fdp_app/menu_view.html", {
-        'home_sections': home_sections,
-        'all_events': all_events,
-    })
-
-
 def section_view(request, section_slug):
     all_events = None
     contents_sections = None

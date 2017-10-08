@@ -26,7 +26,6 @@
             {% if username %}
                 <div class="username">
                     Bonjour {{ username }}<br />
-                    <!--<a href="{% url 'fdp_app-menu_view' %}">menu<br /></a>-->
                     <a href="{% url 'logout' %}">se déconnecter<br /></a>
                 </div>
             {% else %}

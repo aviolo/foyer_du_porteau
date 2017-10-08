@@ -13,7 +13,6 @@ urlpatterns = [
     url(r'^photos/$', views.pictures_view, name='fdp_app-pictures_view'),
     url(r'^photos/([0-9]{4})$', views.pictures_view, name='fdp_app-pictures_view'),
     url(r'^activites/$', views.activites_view, name='fdp_app-activites_view'),
-    url(r'^menu/$', views.menu_view, name='fdp_app-menu_view'),
     url(r'^modifier_profile/$', views.modify_profile_view, name='fdp_app-modify_profile_view'),
     url(r'^(?P<section_slug>[-_\w\d]{1,200})/ajouter_evenement$', views.add_event_view, name='fdp_app-add_event_view'),
     url(r'^(?P<section_slug>[-_\w\d]{1,200})/(?P<event_id>[-_\w\d]{1,200})/ajouter_photo$', views.add_picture_view, name='fdp_app-add_picture_view'),
