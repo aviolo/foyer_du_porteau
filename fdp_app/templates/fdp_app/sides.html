@@ -6,7 +6,7 @@
                 {% if section.types == 0 and section.name != 'Foyer du Porteau' and section.hide != 1 %}
 	                <li>
 			            <div class="view">
-                            <a href="{% url 'fdp_app-section_view' section.url %}">{{ section.name }}</a>
+                            <a href="{% url 'fdp_app-section_view' section.slug %}">{{ section.name }}</a>
 			            </div>
 	                </li>
                 {% endif %}
@@ -52,7 +52,7 @@
         <ul id="section-list">
             {% for event in next_events %}
                 <li>
-                <a href="{% url 'fdp_app-event_view' event.section.url event.id %}">{{ event.name }}</a>
+                <a href="{% url 'fdp_app-event_view' event.section.slug event.id %}">{{ event.name }}</a>
                 </li>
             {% endfor %}
         </ul>

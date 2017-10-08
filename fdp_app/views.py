@@ -4,9 +4,10 @@ from datetime import datetime
 import logging
 
 from django.conf import settings
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.template import defaultfilters
 
@@ -58,6 +59,7 @@ def home_view(request):
     })
 
 
+@login_required
 def modify_profile_view(request):
     home_sections = None
     all_events = None
@@ -72,6 +74,7 @@ def modify_profile_view(request):
     })
 
 
+@login_required
 def modify_section_view(request, section_slug):
     try:
         sections_infos = get_section_infos(section_slug)
@@ -96,10 +99,10 @@ def modify_section_view(request, section_slug):
                 on_error('Erreur lors de la modification des donnees de sections : %s' % e)
             section_contact = get_section_contact(sections_infos['index'])
             all_events = get_all_event_in_section(sections_infos['index'])
-            if 'foyerduporteau' in sections_infos['url']:
+            if 'foyerduporteau' in sections_infos['slug']:
                 return HttpResponseRedirect('/')
             content = {'contents_sections': sections_infos, 'section_contact': section_contact, 'all_events': all_events, }
-            return HttpResponseRedirect('/%s' % (sections_infos['url']), content)
+            return HttpResponseRedirect('/%s' % (sections_infos['slug']), content)
         else:
             on_error('les donnees saisit dans le changement de section sont incorrectes', will_send_mail=False)
             content = modify_section_form(sections_infos)
@@ -109,25 +112,14 @@ def modify_section_view(request, section_slug):
     return render(request, "fdp_app/modify_section_view.html", content)
 
 
-def modify_section_form(section_infos):
-    try:
-        modify_section_form = forms.ModifySectionForm()
-        modify_section_form.fields['picture'].initial = section_infos['picture']
-        modify_section_form.fields['content'].initial = section_infos['content']
-        modify_section_form.fields['schedule'].initial = section_infos['schedule']
-    except IndexError as e:
-        on_error('Erreur lors du chargement du formulaire de section : %s' % e)
-    content = {'modify_section_form': modify_section_form}
-    return content
-
-
-def modify_event_view(request, section_slug, event_slug):
+@login_required
+def modify_event_view(request, section_slug, event_id):
     home_sections = None
     all_sections = None
     event_changed = None
     try:
         sections_infos = get_section_infos(section_slug)
-        event = get_event_by_id(event_slug)
+        event = get_event_by_id(event_id)
         event_changed = models.Event.objects.get(pk=event.id)
     except IndexError as e:
         on_error('Error in add event view 1 : %s' % e)
@@ -182,10 +174,10 @@ def modify_event_view(request, section_slug, event_slug):
                 on_error('Error in add event view 2 : %s' % e)
             section_contact = get_section_contact(sections_infos['index'])
             all_events = get_all_event_in_section(sections_infos['index'])
-            if 'foyerduporteau' in sections_infos['url']:
+            if 'foyerduporteau' in sections_infos['slug']:
                 return HttpResponseRedirect('/')
             content = {'contents_sections': sections_infos, 'section_contact': section_contact, 'all_events': all_events, }
-            return HttpResponseRedirect('/%s' % (sections_infos['url']), content)
+            return HttpResponseRedirect('/%s' % (sections_infos['slug']), content)
         else:
             try:
                 all_sections_right = models.UserSection.objects.filter(user_id=the_user.id, right__id=3).count()
@@ -229,6 +221,7 @@ def modify_event_view(request, section_slug, event_slug):
     })
 
 
+@login_required
 def add_event_view(request, section_slug):
     all_events = None
     event_form = None
@@ -256,10 +249,10 @@ def add_event_view(request, section_slug):
                 on_error('Error in add event view 2 : %s' % e)
             section_contact = get_section_contact(sections_infos['index'])
             all_events = get_all_event_in_section(sections_infos['index'])
-            if 'foyerduporteau' in sections_infos['url']:
+            if 'foyerduporteau' in sections_infos['slug']:
                 return HttpResponseRedirect('/')
             content = {'contents_sections': sections_infos, 'section_contact': section_contact, 'all_events': all_events, }
-            return HttpResponseRedirect('/%s' % (sections_infos['url']), content)
+            return HttpResponseRedirect('/%s' % (sections_infos['slug']), content)
         else:
             on_error('le formulaire est mal rempli', will_send_mail=False)
     else:
@@ -269,7 +262,8 @@ def add_event_view(request, section_slug):
     })
 
 
-def add_picture_view(request, section_slug, event_slug):
+@login_required
+def add_picture_view(request, section_slug, event_id):
     sections_infos = None
     all_events = None
     picture_form = None
@@ -283,14 +277,14 @@ def add_picture_view(request, section_slug, event_slug):
         picture_form = forms.PictureForm(request.POST, request.FILES)
         if picture_form.is_valid():
             try:
-                event = get_event_by_id(event_slug)
+                event = get_event_by_id(event_id)
                 event.last_modification_date = datetime.now()
                 event.save()
                 year = str(event.date.year)
                 section_name = get_section_name(event.section_id)
                 section_name = defaultfilters.slugify(section_name)
                 event_name = defaultfilters.slugify(event.name)
-                save_files(request.FILES['file'], year, section_name, event_name, event_slug, the_user.id)
+                save_files(request.FILES['file'], year, section_name, event_name, event_id, the_user.id)
             except IndexError as e:
                 on_error('Error in add picture view 2 : %s' % e)
         section_contact = get_section_contact(sections_infos['index'])
@@ -303,10 +297,10 @@ def add_picture_view(request, section_slug, event_slug):
         else:
             section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
             all_sections_authorization = section_query.values('section__name', 'section__id')
-        if 'foyerduporteau' in sections_infos['url']:
+        if 'foyerduporteau' in sections_infos['slug']:
             return HttpResponseRedirect('/')
         content = {'contents_sections': sections_infos, 'section_contact': section_contact, 'all_events': all_events, 'autho_section': all_sections_authorization}
-        return HttpResponseRedirect('/%s' % (sections_infos['url']), content)
+        return HttpResponseRedirect('/%s' % (sections_infos['slug']), content)
     else:
         picture_form = forms.PictureForm(request.POST, request.FILES)
     return render(request, "fdp_app/add_picture_view.html", {
@@ -316,6 +310,7 @@ def add_picture_view(request, section_slug, event_slug):
     })
 
 
+@login_required
 def menu_view(request):
     home_sections = None
     all_events = None
@@ -327,61 +322,6 @@ def menu_view(request):
     return render(request, "fdp_app/menu_view.html", {
         'home_sections': home_sections,
         'all_events': all_events,
-    })
-
-
-def logout_view(request):
-    logout(request)
-    home_sections = None
-    all_events = None
-    try:
-        home_sections = get_section_infos('foyerduporteau')
-        all_events = get_next_thrid_event_in_section(home_sections['index'])
-    except IndexError as e:
-        on_error('Error in logout view : %s' % e)
-    content = {'home_sections': home_sections, 'all_events': all_events, 'username': None, }
-    return HttpResponseRedirect('/', content)
-
-
-def login_view(request):
-    # Si tu veux qu'à la fin de ta requête post l'url soit changée,
-    # il faut que tu fasses : return HttpResponseRedirect('url')
-    # au lieu de retourner un objet HttpResponse (donné par la fonction render en général).
-    state = "Please log in below..."
-    username = password = ''
-    if request.POST:
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-                home_sections = None
-                all_events = None
-                try:
-                    home_sections = get_section_infos('foyerduporteau')
-                    all_events = get_next_thrid_event_in_section(home_sections['index'])
-                    user = request.user
-                    if user.is_active:
-                        the_user = models.User.objects.filter(username=user)[0]
-                        all_sections_right = models.UserSection.objects.filter(user_id=the_user.id, right__id=3).count()
-                        if all_sections_right >= 1:
-                            all_sections_authorization = list()
-                            for section in models.Section.objects.all():
-                                all_sections_authorization.append({'section__id': section.id, 'section__name': section.name})
-                        else:
-                            section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
-                            all_sections_authorization = section_query.values('section__name', 'section__id')
-                except IndexError as e:
-                    on_error('Error in login view : %s' % e)
-                content = {'home_sections': home_sections, 'all_events': all_events, 'username': user, 'autho_section': all_sections_authorization}
-                return HttpResponseRedirect('/', content)
-            else:
-                state = "Your account is not active, please contact the site admin."
-        else:
-            state = "Your username and/or password were incorrect."
-    return render(request, 'fdp_app/login_view.html', {
-        'state': state,
     })
 
 
@@ -463,10 +403,10 @@ def pictures_view(request, year=''):
             if all_sections_right >= 1:
                 all_sections_authorization = list()
                 for section in models.Section.objects.all():
-                    all_sections_authorization.append({'section__id': section.id, 'section__name': section.name, 'section__url': section.url})
+                    all_sections_authorization.append({'section__id': section.id, 'section__name': section.name, 'section__slug': section.slug})
             else:
                 section_query = models.UserSection.objects.filter(user_id=the_user.id, right__id=4)
-                all_sections_authorization = section_query.values('section__name', 'section__id', 'section__url')
+                all_sections_authorization = section_query.values('section__name', 'section__id', 'section__slug')
     except IndexError as e:
         on_error('Error in pictures view 1 : %s' % e)
     return render(request, "fdp_app/pictures_view.html", {
@@ -476,21 +416,33 @@ def pictures_view(request, year=''):
     })
 
 
-def event_view(request, section_slug, event_slug):
-    event = models.Event.objects.filter(id=event_slug)[0]
+def event_view(request, section_slug, event_id):
+    event = get_object_or_404(models.Event, id=event_id)
     event.pictures = get_all_pictures_in_event(event)
     return render(request, "fdp_app/event_view.html", {'event': event})
 
 
 # get functions
 
-def get_section_infos(url):
+def modify_section_form(section_infos):
     try:
-        section = models.Section.objects.filter(url=url)[0]
+        modify_section_form = forms.ModifySectionForm()
+        modify_section_form.fields['picture'].initial = section_infos['picture']
+        modify_section_form.fields['content'].initial = section_infos['content']
+        modify_section_form.fields['schedule'].initial = section_infos['schedule']
+    except IndexError as e:
+        on_error('Erreur lors du chargement du formulaire de section : %s' % e)
+    content = {'modify_section_form': modify_section_form}
+    return content
+
+
+def get_section_infos(slug):
+    try:
+        section = models.Section.objects.filter(slug=slug)[0]
     except IndexError:
-        section = models.Section.objects.create(url=url, name='test')
+        raise Http404()
     logger.info("in get section infos : %s" % section)
-    contents_sections = dict(index=section.id, name=section.name, content=section.content, picture=section.picture, schedule=section.schedule, url=section.url)
+    contents_sections = dict(index=section.id, name=section.name, content=section.content, picture=section.picture, schedule=section.schedule, slug=section.slug)
     return contents_sections
 
 
@@ -540,7 +492,7 @@ def get_event_by_id(index):
 
 def get_section_by_name(name):
     section = models.Section.objects.all().filter(name=name)[0]
-    contents_sections = dict(index=section.id, name=section.name, content=section.content, picture=section.picture, schedule=section.schedule, url=section.url)
+    contents_sections = dict(index=section.id, name=section.name, content=section.content, picture=section.picture, schedule=section.schedule, slug=section.slug)
     return contents_sections
 
 

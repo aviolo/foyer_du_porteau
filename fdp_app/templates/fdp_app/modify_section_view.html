@@ -27,7 +27,7 @@
                                     <th>Horaires: </th> <td>{{ field }}</td>
                                     <td style="color:red;">{{ field.errors }}</td>  
                                 {% elif field.label == 'Picture' %}
-                                    <th>Image: </th> <td><img src="{{ field.value.url }}" />
+                                    <th>Image: </th> <td><img src="{{ field.value.slug }}" />
                                     Modifier: <input id="id_picture" type="file" name="picture"></td>
                                     <td style="color:red;">{{ field.errors }}</td> 
                                 {% else %}

@@ -41,6 +41,7 @@ def resize_image(image_path, width=1280):
         image.load()
         if image.mode not in ['RGB', 'RGBA']:
             image = image.convert('RGB')
+        # TODO handle ratio
         image.thumbnail((1280, width * 4 / 3), Image.ANTIALIAS)
         image.save(image_path, 'PNG' if is_png else 'JPEG')
     except Exception as e:

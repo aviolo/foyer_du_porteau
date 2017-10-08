@@ -16,7 +16,7 @@
                                     <img src="{% static 'images/change.png' %}">
                                 </div>
                                 <div class="paragraphe">
-                                    <a href="{% url 'fdp_app-modify_section_view' home_sections.url %}">Modifier le contenu</a>
+                                    <a href="{% url 'fdp_app-modify_section_view' home_sections.slug %}">Modifier le contenu</a>
                                 </div>
                             </div>
                         </div>
@@ -35,7 +35,7 @@
             </div>
             {% for section in autho_section %}
                 {% if section.section__name == home_sections.name %}
-                    <a href="{% url 'fdp_app-add_event_view' home_sections.url %}">
+                    <a href="{% url 'fdp_app-add_event_view' home_sections.slug %}">
                         <div class="transparent_block" style="width:30%; margin:auto;">
                             <div class="left">
                                 <img src="{% static  'images/add.png' %}">
@@ -47,7 +47,7 @@
             {% endfor %}
             {% for event in all_events %}
             <div class="block">
-                <div class="title"> <a href="{% url 'fdp_app-event_view' home_sections.url event.id %}">{{ event.name }}</a></div>
+                <div class="title"> <a href="{% url 'fdp_app-event_view' home_sections.slug event.id %}">{{ event.name }}</a></div>
                 <div class="subtitle"> Date : {{ event.date }}</div>
                 {% for section in autho_section %}
                     {% if section.section__name == home_sections.name %}
@@ -57,7 +57,7 @@
                                     <img src="{% static 'images/add.png' %}">
                                 </div>
                                 <div class="paragraphe">
-                                    <a href="{% url 'fdp_app-add_picture_view' home_sections.url event.id %}">Ajouter des photos</a>
+                                    <a href="{% url 'fdp_app-add_picture_view' home_sections.slug event.id %}">Ajouter des photos</a>
                                 </div>
                             </div>
                             
@@ -66,7 +66,7 @@
                                     <img src="{% static 'images/change.png' %}">
                                 </div>
                                 <div class="paragraphe">
-                                    <a href="{% url 'fdp_app-modify_event_view' home_sections.url event.id %}">Modifier</a>
+                                    <a href="{% url 'fdp_app-modify_event_view' home_sections.slug event.id %}">Modifier</a>
                                 </div>
                             </div>
                         </div>

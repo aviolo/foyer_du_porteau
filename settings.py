@@ -186,6 +186,11 @@ LOGGING = {
     },
 }
 
+# Auth config
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
+
 # Settings override
 if BASE_DIR not in sys.path:
     sys.path.append(BASE_DIR)  # to allow imports

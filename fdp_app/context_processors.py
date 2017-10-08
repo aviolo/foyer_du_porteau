@@ -17,7 +17,7 @@ def is_element_already_logged(new_element, modification_list):
 
 def common(request):
     user = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         user = request.user
     all_sections = models.Section.objects.all().order_by('name')
 
@@ -28,7 +28,7 @@ def common(request):
     for event in modification_list:
         if event:
             event.pictures = get_all_pictures_in_event(event)
-            event.section_slug = event.section.url
+            event.section_slug = event.section.slug
 
     return {
         'username': user,

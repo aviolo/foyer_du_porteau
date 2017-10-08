@@ -1,0 +1,17 @@
+{% extends "fdp_app/base.html" %}{% load i18n %}{% load staticfiles %}
+
+{% block title %}{% trans "Connexion" %}{% endblock %}
+
+{% block body %}
+    <div class="center">
+        <div id="content">
+            <div class="block">
+                <form method="post" action=".">{% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">{% trans 'Submit' %}</button>
+                </form>
+            </div>
+            <p><a href="{% url 'password_reset' %}">Mot de passe oublié ?</a></p>
+        </div>
+    </div>
+{% endblock %}

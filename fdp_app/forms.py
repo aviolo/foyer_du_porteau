@@ -18,6 +18,7 @@ class EventForm(forms.ModelForm):
 
 
 class PictureForm(forms.Form):
+    # TODO: resize image in jpeg quality 80
     file = forms.FileField(required=True)
 
 
@@ -32,6 +33,7 @@ class ModifyEventForm(forms.ModelForm):
 
 
 class ModifySectionForm(forms.ModelForm):
+    # TODO: resize image in jpeg quality 80 (1280 width)
     class Meta:
         model = models.Section
         fields = ('content', 'schedule', 'picture')

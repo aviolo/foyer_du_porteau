@@ -8,7 +8,7 @@
             <div class="block">
               {% for section in all_sections %}
                 {% if section.types == 0 and section.name != 'Foyer du Porteau' and section.hide != 1 %}
-                    <a href="{% url 'fdp_app-section_view' section.url %}">
+                    <a href="{% url 'fdp_app-section_view' section.slug %}">
                         <div id="light_block">
                             <div class="light_left"><img src="{% url 'media' section.picture %}" ></div>
                             <div class="paragraphe">

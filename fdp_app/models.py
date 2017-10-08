@@ -10,7 +10,7 @@ class UserProfile(models.Model):
     # checker que le profil associé à l'utilisateur existe
     # user.get_profile()
     # This field is required.
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     # Other fields here
     address = models.CharField(max_length=255, blank=True)
@@ -32,7 +32,7 @@ class Section(models.Model):
     content = models.TextField('contents', blank=True)
     types = models.IntegerField(default=0)
     picture = models.ImageField("Picture", upload_to="user_pictures", blank=True, null=True, max_length=255)
-    url = models.CharField(max_length=255, blank=True, null=True)
+    slug = models.CharField(max_length=255, blank=True, null=True)
     schedule = models.CharField(max_length=255, blank=True, null=True)
     hide = models.BooleanField(default=False)
 
@@ -41,17 +41,17 @@ class Section(models.Model):
 
 
 class UserSection(models.Model):
-    user = models.ForeignKey(User)
-    section = models.ForeignKey(Section)
-    right = models.ForeignKey(Right)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    section = models.ForeignKey(Section, on_delete=models.CASCADE)
+    right = models.ForeignKey(Right, on_delete=models.CASCADE)
 
 
 class Event(models.Model):
     name = models.CharField(max_length=255)
     content = models.TextField('contents', blank=True)
     date = models.DateTimeField('date published', default=datetime.datetime.now)
-    section = models.ForeignKey(Section)
-    user = models.ForeignKey(User)
+    section = models.ForeignKey(Section, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     last_modification_date = models.DateTimeField('date published', default=datetime.datetime.now)
 
     def __str__(self):
@@ -62,15 +62,15 @@ class Comment(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField('contents')
     date = models.DateTimeField('date published', default=datetime.datetime.now)
-    user = models.ForeignKey(User)
-    event = models.ForeignKey(Event)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
 
 class Picture(models.Model):
     title = models.CharField(max_length=255)
     filename = models.ImageField("Picutre", upload_to="user_pictures", blank=True, null=True, max_length=255)
-    user = models.ForeignKey(User)
-    event = models.ForeignKey(Event)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
 
 class Media(models.Model):
