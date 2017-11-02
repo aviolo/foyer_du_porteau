@@ -171,6 +171,11 @@ LOGGING = {
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
         },
+        'django_log_file': {
+            'class': 'logging.FileHandler',
+            'formatter': 'verbose',
+            'filename': os.path.join(TMP_DIR, 'django.log'),
+        },
     },
     'loggers': {
         'django.request': {
@@ -180,7 +185,7 @@ LOGGING = {
         },
     },
     'root': {
-        'handlers': ['console'],
+        'handlers': ['django_log_file'],
         'level': 'INFO',
         'propagate': False,
     },
