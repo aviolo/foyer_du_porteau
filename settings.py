@@ -3,14 +3,11 @@ import os
 import sys
 
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
-ALLOWED_HOSTS = '*'
 
 ADMINS = (
     ('Lancereau Flavie', 'lancereau.flavie@gmail.com'),
     ('Violo Anthony', 'anthony.violo@gmail.com')
 )
-
 MANAGERS = ADMINS
 
 BASE_DIR = os.path.dirname(os.path.abspath(os.path.expanduser(__file__)))
@@ -39,6 +36,9 @@ DATABASES = {
 #     }
 # }
 
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+ALLOWED_HOSTS = '*'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
