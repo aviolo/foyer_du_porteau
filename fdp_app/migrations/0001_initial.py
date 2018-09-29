@@ -37,14 +37,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Media',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(blank=True, null=True, upload_to='images/upload/')),
-                ('new_upload', models.BooleanField()),
-            ],
-        ),
-        migrations.CreateModel(
             name='Picture',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),

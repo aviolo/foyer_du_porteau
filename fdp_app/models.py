@@ -73,11 +73,6 @@ class Picture(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
 
-class Media(models.Model):
-    file = models.FileField(upload_to='images/upload/', null=True, blank=True)
-    new_upload = models.BooleanField()
-
-
 # -------------------------------------------------------------------------------
 # Listen to users creations to create profiles
 # -------------------------------------------------------------------------------
@@ -86,5 +81,6 @@ def create_user_profile(sender, instance, created, **kwargs):
         profile = UserProfile(user=instance)
         profile.save()
     return None
+
 
 models.signals.post_save.connect(receiver=create_user_profile, sender=User, weak=False, dispatch_uid='create_user_profile')
