@@ -12,7 +12,7 @@
                 <li><a href="{% url 'fdp_app-pictures_view' '0000' %}">Prochaines animations</a></li>
             </div>
 
-            <script type="text/javascript" src="{% static 'javascripts/slide.js' %}"></script>
+            
             {% for event in all_events %}
                 <div class="block">
                     <div class="title">{{ event.name }}</div>
